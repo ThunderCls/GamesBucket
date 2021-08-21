@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace GameList.DataAccess.Migrations
+namespace GamesBucket.DataAccess.Migrations
 {
     public partial class initial : Migration
     {
@@ -13,6 +13,7 @@ namespace GameList.DataAccess.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    GameId = table.Column<Guid>(type: "TEXT", nullable: false),
                     SteamAppId = table.Column<uint>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
@@ -28,14 +29,17 @@ namespace GameList.DataAccess.Migrations
                     MetaCriticScore = table.Column<int>(type: "INTEGER", nullable: true),
                     MetaCriticUrl = table.Column<string>(type: "TEXT", nullable: true),
                     SteamScore = table.Column<double>(type: "REAL", nullable: true),
-                    ReleaseDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    ReleaseDate = table.Column<DateTime>(type: "DATE", nullable: false),
                     Developers = table.Column<string>(type: "TEXT", nullable: true),
                     Linux = table.Column<bool>(type: "INTEGER", nullable: false),
                     Mac = table.Column<bool>(type: "INTEGER", nullable: false),
                     Windows = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Favorite = table.Column<bool>(type: "INTEGER", nullable: false),
+                    InCatalog = table.Column<bool>(type: "INTEGER", nullable: false),
                     GameplayMain = table.Column<double>(type: "REAL", nullable: false),
                     GameplayMainExtra = table.Column<double>(type: "REAL", nullable: false),
-                    GameplayCompletionist = table.Column<double>(type: "REAL", nullable: false)
+                    GameplayCompletionist = table.Column<double>(type: "REAL", nullable: false),
+                    Played = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -46,13 +50,13 @@ namespace GameList.DataAccess.Migrations
                 name: "Genres",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    GenreId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Genres", x => x.Id);
+                    table.PrimaryKey("PK_Genres", x => x.GenreId);
                 });
 
             migrationBuilder.CreateTable(
@@ -72,43 +76,43 @@ namespace GameList.DataAccess.Migrations
                 name: "Movies",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    MovieId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    GameId = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Thumbnail = table.Column<string>(type: "TEXT", nullable: true),
-                    Webm = table.Column<string>(type: "TEXT", nullable: true),
-                    GameId = table.Column<int>(type: "INTEGER", nullable: true)
+                    Webm = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Movies", x => x.Id);
+                    table.PrimaryKey("PK_Movies", x => x.MovieId);
                     table.ForeignKey(
                         name: "FK_Movies_Games_GameId",
                         column: x => x.GameId,
                         principalTable: "Games",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Screenshots",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                    ScreenshotId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    GameId = table.Column<int>(type: "INTEGER", nullable: false),
                     PathThumbnail = table.Column<string>(type: "TEXT", nullable: true),
-                    PathFull = table.Column<string>(type: "TEXT", nullable: true),
-                    GameId = table.Column<int>(type: "INTEGER", nullable: true)
+                    PathFull = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Screenshots", x => x.Id);
+                    table.PrimaryKey("PK_Screenshots", x => x.ScreenshotId);
                     table.ForeignKey(
                         name: "FK_Screenshots_Games_GameId",
                         column: x => x.GameId,
                         principalTable: "Games",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -116,11 +120,11 @@ namespace GameList.DataAccess.Migrations
                 columns: table => new
                 {
                     GamesId = table.Column<int>(type: "INTEGER", nullable: false),
-                    GenresId = table.Column<int>(type: "INTEGER", nullable: false)
+                    GenresGenreId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GameGenres", x => new { x.GamesId, x.GenresId });
+                    table.PrimaryKey("PK_GameGenres", x => new { x.GamesId, x.GenresGenreId });
                     table.ForeignKey(
                         name: "FK_GameGenres_Games_GamesId",
                         column: x => x.GamesId,
@@ -128,17 +132,17 @@ namespace GameList.DataAccess.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_GameGenres_Genres_GenresId",
-                        column: x => x.GenresId,
+                        name: "FK_GameGenres_Genres_GenresGenreId",
+                        column: x => x.GenresGenreId,
                         principalTable: "Genres",
-                        principalColumn: "Id",
+                        principalColumn: "GenreId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_GameGenres_GenresId",
+                name: "IX_GameGenres_GenresGenreId",
                 table: "GameGenres",
-                column: "GenresId");
+                column: "GenresGenreId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Games_SteamAppId",

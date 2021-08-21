@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GamesBucket.App.Helpers
+namespace GamesBucket.Shared.Helpers
 {
     public static class TimeConverter
     {

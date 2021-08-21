@@ -1,7 +1,7 @@
 ﻿@using GamesBucket.Shared.Helpers
 @model List<GamesBucket.DataAccess.Models.Dtos.SearchResult>
 @{
-	ViewData["Title"] = "title";
+	ViewData["Title"] = "Search";
 }
 
 <!-- page title -->
@@ -16,7 +16,7 @@
 
 					<!-- breadcrumb -->
 					<ul class="breadcrumb">
-						<li class="breadcrumb__item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+						<li class="breadcrumb__item"><a asp-controller="Catalog" asp-action="Index">Catalog</a></li>
 						<li class="breadcrumb__item breadcrumb__item--active">Search</li>
 					</ul>
 					<!-- end breadcrumb -->
@@ -117,18 +117,22 @@
 				else
 					gameCardImage = @"/img/cover-placeholder.png";
 				
+				var gameId = game.SteamAppId == 0
+					? game.GameId.ToString()
+					: game.SteamAppId.ToString();
+				
 				<!-- card -->
 				<div class="col-12 col-sm-6 col-md-4 col-xl-3 col-xl-20 game-card"
 				     data-page="@pageNumber"
 				     data-release-date="@releaseDate"
 				     data-genre="@genreList">
 					<div class="card card--catalog">
-						<a asp-controller="Home" asp-action="Details" asp-route-appId="@game.SteamAppId" target="_blank" class="card__cover">
+						<a asp-controller="Catalog" asp-action="Details" asp-route-appId="@gameId" target="_blank" class="card__cover">
 							<img src="@gameCardImage" alt="">
 						</a>
 
 						<div class="card__title">
-							<h3><a asp-controller="Home" asp-action="Details" asp-route-appId="@game.SteamAppId" target="_blank">@game.Name</a></h3>
+							<h3><a asp-controller="Catalog" asp-action="Details" asp-route-appId="@gameId" target="_blank">@game.Name</a></h3>
 						</div>
 					</div>
 				</div>
@@ -174,7 +178,7 @@
 		        </a>
 		        <ul class="mfb-component__list">
 			        <li>
-				        <a asp-controller="Catalog" asp-action="Custom" data-mfb-label="Add Custom" target="_blank" class="mfb-component__button--child">
+				        <a asp-controller="Home" asp-action="New" data-mfb-label="Add New" target="_blank" class="mfb-component__button--child">
 					        <i class="mfb-component__child-icon fa fa-plus"></i>
 				        </a>
 			        </li>
@@ -192,7 +196,7 @@
 			</div>
 			<div class="row d-flex justify-content-center">
 				<div class="col-md-3">
-					<a class="sign__btn" asp-controller="Catalog" asp-action="Custom">Add Custom</a>
+					<a class="sign__btn" asp-controller="Home" asp-action="New">Add New</a>
 				</div>
 			</div>
 		}

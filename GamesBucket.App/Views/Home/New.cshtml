@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["Title"] = "Add New";
+}
+
+<!-- home -->
+<section class="section darker section--bg section--first" style="background: url(/img/bg.jpg) center top 140px / auto 750px no-repeat;">
+    <div class="container">
+        <div class="row">
+            <!-- title -->
+            <div class="col-md-12 mb-5 mt-5 p-2" style="text-align: center;">
+                <span class="section__title section__title--title">Add New <b>Game</b></span>
+            </div>				
+            <!-- end title -->
+        </div>
+        <form asp-controller="Home" asp-action="Search">
+            <div class="row mb-2 mt-5" style="text-align: center;">
+                <div class="col-md-12 text-white mb-5">
+                    <input name="query" type="text" class="form__input big-input" required placeholder="Search game...">
+                </div>
+            </div>
+            
+            <div class="row justify-content-center mb-5" style="text-align: center;">
+                <div class="col-lg-2 col-md-4 col-10 mb-lg-2">
+                    <button class="sign__btn">Steam Search</button>
+                </div>
+                <div class="col-lg-2 col-md-4 col-10 mb-lg-2">
+                    <button type="button" class="sign__btn" id="add-custom" onclick="window.location = `${location.origin}/catalog/custom`">Add Custom</button>
+                </div>
+            </div>
+        </form>
+    </div>		
+</section>
+<!-- end home -->

@@ -2,11 +2,21 @@
 
 @{
     ViewData["Title"] = "title";
+	var bgImage = string.IsNullOrEmpty(Model.BackgroundImage)
+		? @"/img/new_bg.jpg"
+		: Model.BackgroundImage;
+			
 }
 
+<!--**********************************
+Loader
+***********************************-->
+<div class="spinner-border-body">
+  <div class="loader"></div>
+</div>
 <!-- section -->
-<section class="section section--first section--last section--bg section-details-bg" 
-         style="background: url('@Model.BackgroundImage'); background-size: cover;">
+<section class="section section--last section--first section--bg section-details-bg" 
+         style="background: url('@bgImage'); background-size: cover;">
 	<div class="container">
 		<div class="row">
 			<div class="col-12">
@@ -14,14 +24,18 @@
 					<div class="details__head">
 						<div class="details__cover">
 							@{
-								if (string.IsNullOrEmpty(Model.BoxImage))
+								if (!string.IsNullOrEmpty(Model.BoxImage))
+								{
+									<img class="details-cover-box" src="@Model.BoxImage" alt="">
+								}
+								else if (!string.IsNullOrEmpty(Model.HeaderImage))
 								{
 									<img class="details-top-cover" src="@Model.HeaderImage" alt="">
 									<img class="details-cover-bg" src="@Model.HeaderImage" alt="">
 								}
 								else
 								{
-									<img class="details-cover-box" src="@Model.BoxImage" alt="">
+									<img class="details-cover-box" src="/img/cover-placeholder.png" alt="">
 								}
 							
 								var movie = Model.Movies.FirstOrDefault()?.Webm
@@ -39,8 +53,12 @@
 									? "N/A" : $"{Model.MetaCriticScore}%";
 								var steamScore = Model.SteamScore <= 0 
 									? "N/A" : $"{Model.SteamScore}%";
-								var steamGameUrl = $"https://store.steampowered.com/app/{Model.SteamAppId}";
-								
+								var gameId = Model.SteamAppId == 0
+                                	? Model.GameId.ToString()
+                                	: Model.SteamAppId.ToString();
+								var steamGameUrl = Model.SteamAppId != 0
+									? $"https://store.steampowered.com/app/{gameId}"
+									: "#";
 								var mainBeat = Model.GameplayMain == 0 
 									? "N/A" : $"{Model.GameplayMain} h";
 								var mainExtraBeat = Model.GameplayMainExtra == 0 
@@ -145,23 +163,15 @@
                         		</div>
                             </div>
 							<div class="details__actions">
-							@{ var displayType = string.Empty; }	
-							@if (!Model.InCatalog)
+                        		<button class="btn-delete-static-wide btn-delete" data-steamid="@gameId" data-action="remove" type="button" onclick="editCatalog(this, this.dataset.action, this.dataset.steamid)">Remove from Catalog</button>
+                        		<button class="btn-edit-static-wide details__favorite" data-steamid="@gameId" data-action="edit" type="button" onclick="editCatalog(this, this.dataset.action, this.dataset.steamid)">Edit Details</button>    
+							@if (!@Model.Favorite)
 							{
-								displayType = "none";
-								<button class="details__buy" type="button" id="btn-catalog-action" data-steamid="@Model.SteamAppId" data-action="save" onclick="editCatalog(this, this.dataset.action, this.dataset.steamid)">Add to Catalog</button>
+                        		<button class="details__favorite" type="button" onclick="addToFavorites(this)">
+                        			<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M352.92,80C288,80,256,144,256,144s-32-64-96.92-64C106.32,80,64.54,124.14,64,176.81c-1.1,109.33,86.73,187.08,183,252.42a16,16,0,0,0,18,0c96.26-65.34,184.09-143.09,183-252.42C447.46,124.14,405.68,80,352.92,80Z" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></path></svg>Add to favorites
+                        		</button>
 							}
-							else
-							{
-								displayType = "block";
-								<button class="btn-delete-static-wide btn-delete" type="button" data-steamid="@Model.SteamAppId" data-action="remove" onclick="editCatalog(this, this.dataset.action, this.dataset.steamid)">Remove from Catalog</button>
-								var display = Model.Favorite ? "none" : "block";
-							}
-								<button class="btn-edit-static-wide details__favorite" data-steamid="@Model.SteamAppId" data-action="edit" type="button" onclick="editCatalog(this, this.dataset.action, this.dataset.steamid)" style="display: @displayType">Edit Details</button>    
-								<button class="details__favorite" type="button" onclick="addToFavorites(this)" style="display: @displayType">
-									<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M352.92,80C288,80,256,144,256,144s-32-64-96.92-64C106.32,80,64.54,124.14,64,176.81c-1.1,109.33,86.73,187.08,183,252.42a16,16,0,0,0,18,0c96.26-65.34,184.09-143.09,183-252.42C447.46,124.14,405.68,80,352.92,80Z" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></path></svg>Add to favorites
-								</button>							
-							</div>
+                        	</div>
                         </div>
 					</div>						
 				</div>

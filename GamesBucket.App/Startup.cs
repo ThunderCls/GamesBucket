@@ -38,7 +38,10 @@ namespace GamesBucket.App
             services.AddDbContext<AppDbContext>(options =>
             {
                 //options.UseSqlite(_configuration.GetConnectionString("GamesDb"));
-                options.UseSqlite(db);
+                options.UseSqlite(db, builder =>
+                {
+                    builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery);
+                });
             });
 
             services.AddAutoMapper(typeof(Startup));

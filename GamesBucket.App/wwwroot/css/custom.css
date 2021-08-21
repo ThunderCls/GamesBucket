@@ -89,7 +89,15 @@ li.lx{
 @media (min-width: 375px){
     .card--catalog .card__cover {
         width: 100%;
-    }    
+    }
+
+    .details__buy{
+        margin-bottom: 15px;
+    }
+}
+
+.details__actions{
+    margin-top: 0 !important;
 }
 
 @media (max-width: 760px){
@@ -284,12 +292,13 @@ span.beat-type {
 @media (min-width: 1024px) {
     .details__buy, .details__favorite, .details__actions{
         width: 100%;
+        margin-bottom: 15px;
     }
     .game-info-details {
         width: 100%;
     }
     .details__cart {
-        height: 370px;
+        height: 500px;
     }
     .game-data-container {
         display: flex;
@@ -299,21 +308,26 @@ span.beat-type {
         justify-content: space-around;
         align-items: center;
         width: 100%;
+        height: 100%;
     }
 }
 
 @media (max-width: 415px) {
     .details__cart {
-        height: 420px;
+        height: 470px;
     }
 }
 
 @media (min-width: 768px) {
     .card__cover img {
-        min-width: 240px;
+        /*min-width: 240px;*/
         min-height: 340px;
         max-height: 340px;
     }
+}
+
+.card__cover img, .details__cover img {
+    object-fit: cover;
 }
 
 @media (max-width: 375px) {
@@ -321,7 +335,7 @@ span.beat-type {
         min-height: 500px;
     }
     .card--catalog .card__title{
-        margin-bottom: 20px;
+        /*margin-bottom: 20px;*/
     }
 }
 
@@ -364,3 +378,345 @@ span.beat-type {
     100% { transform: rotate(360deg); }
 }
 /* loader end */
+
+.card__title {
+    background-color: #1f2534;
+}
+
+@media (min-width: 576px){
+    .card--catalog .card__title {
+        min-height: 80px;
+    }
+    .card--catalog .card__actions {
+        min-height: 90px;
+        max-height: 90px;
+    }
+}
+
+.btn-delete {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: calc(100% - 59px);
+    height: 44px;
+    border-radius: 6px;
+    background-color: #333a4d;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.8px;
+    line-height: 16px;
+}
+.btn-delete:hover {
+    background-color: #b42929;
+}
+
+.btn-delete-static-wide{
+    width: 100% !important;
+    background-color: #b42929 !important;
+    margin-bottom: 15px;
+    margin-top: 15px;
+}
+
+.btn-edit-static-wide{
+    margin: 0;
+}
+.btn-edit-static-wide:hover {
+    background-color: #353d52;
+}
+
+@media (min-width: 360px) {
+    .card--catalog .card__actions {
+        /*padding: 0 15px 0;*/
+        padding: 15px 15px 15px;
+        position: unset;
+        width: 100%;
+        border-left: 1px solid #232a3d;
+    }
+    .card--catalog .card__title {
+        width: 100%;
+    }
+}
+
+.button-icon {
+    padding-right: 15px;
+}
+
+/* jquery-confirm */
+.jconfirm.jconfirm-black .jconfirm-bg, .jconfirm.jconfirm-dark .jconfirm-bg{
+    background-color: black !important;
+    opacity: .5 !important;
+}
+
+.jconfirm.jconfirm-black .jconfirm-box, .jconfirm.jconfirm-dark .jconfirm-box{
+    background: #1b222e !important;
+}
+
+.jconfirm .jconfirm-box.jconfirm-type-purple{
+    border-top: solid 7px #a782e9;
+    -webkit-animation-name: type-purple;
+}
+
+.jconfirm .jconfirm-box div.jconfirm-title-c{
+    /*padding-bottom: 20px !important;*/
+    /*border-bottom: solid 1px #333a4d;*/
+}
+
+.jconfirm .jconfirm-box div.jconfirm-content-pane.no-scroll{
+    /*padding-top: 20px;*/
+}
+
+.btn-dlg-confirm{
+    background-color: #29b474;
+    text-transform: capitalize !important;
+    margin: 10px;
+    min-width: 100px;
+}
+.btn-dlg-confirm:hover{
+    background-color: #a782e9;
+}
+
+.btn-dlg-cancel{
+    background-color: #333a4d;
+    text-transform: capitalize !important;
+    margin: 10px;
+    min-width: 100px;
+}
+.btn-dlg-cancel:hover{
+    background-color: #282e3d;
+}
+
+@media (min-width: 768px) {
+    .jconfirm-title:before {
+        top: 3px;
+        bottom: 3px;
+    }
+}
+.jconfirm-title:before {
+    content: '';
+    position: absolute;
+    display: block;
+    top: 2px;
+    bottom: 2px;
+    left: 0;
+    width: 3px;
+    background-color: #a782e9;
+    border-radius: 4px;
+}
+@media (min-width: 768px) {
+    .jconfirm-title {
+        font-size: 32px;
+    }
+}
+@media (min-width: 576px) {
+    .jconfirm-title {
+        font-size: 30px;
+    }
+}
+.jconfirm-title {
+    color: #fff;
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 110%;
+    margin-bottom: 0;
+    position: relative;
+    padding-left: 30px;
+    font-family: 'Montserrat', sans-serif;
+}
+.jconfirm .jconfirm-box-container {
+    min-width: 60%;
+}
+@media (min-width: 1030px) {
+    .jconfirm .jconfirm-box-container {
+        min-width: 40%;
+    } 
+}
+.jconfirm .jconfirm-box.loading:before {
+    background: #1b222e !important;
+}
+
+.details-beat-time {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: space-between;
+    justify-content: space-between;
+    align-items: center;
+}
+.details-beat-time > a {
+    color: #ab73c2;
+    font-size: .7rem;
+}
+
+/* floating button */
+.mfb-component__button--child, .mfb-component__button--main {
+    background-color: #724db2 !important;
+}
+ul.mfb-component__list:hover > li > a {
+    color: white !important;
+}
+.mfb-component__wrap:hover > a {
+    color: white !important;
+}
+
+.center-form-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-around;
+    align-content: space-between;
+}
+.width-50 {
+    width: 50% !important;
+}
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+}
+.grouped-inputs {
+    background-color: #1b222e;
+    border: 1px solid rgba(167,130,233,0.06);
+    padding: 30px 20px 20px 20px;
+    border-radius: 6px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+.grouped-inputs > span {
+    color: #fff;
+    display: inline;
+    position: absolute;
+    top: 3px;
+}
+input.form__input.input-last {
+    margin-bottom: 5px;
+}
+.form__btn {
+    width: 100% !important;
+}
+.form-row.first-row {
+    margin-top: 15px;
+}
+img.new-cover-box {
+    width: 100%;
+    margin-bottom: 20px;
+    height: 500px;
+    object-fit: cover;
+}
+.new-cover-box-upload-btn {
+    bottom: 50px;
+    position: absolute;
+    left: 45px;
+    z-index: 2;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 75%;
+    height: 55px;
+    border-radius: 6px;
+    border: 1px solid rgba(167,130,233,0.4);
+    background-color: rgba(167,130,233,0.15);
+    font-size: 14px;
+    letter-spacing: 0.4px;
+    color: #fff;
+}
+.new-cover-box-upload-btn:before {
+    content: '';
+    position: absolute;
+    display: block;
+    z-index: 1;
+    pointer-events: none;
+    top: 5px;
+    left: 5px;
+    bottom: 5px;
+    right: 5px;
+    border-radius: 6px;
+    background-color: #1b222e;
+    opacity: 0.75;
+    transition: 0.5s;
+}
+.new-cover-box-upload-btn svg {
+    stroke: #a782e9;
+    width: 22px;
+    height: auto;
+    margin-right: 15px;
+    position: relative;
+    z-index: 3;
+    transition: 0.5s;
+}
+.new-cover-box-upload-btn:hover {
+    border-color: rgba(167,130,233,0.6);
+    background-color: rgba(167,130,233,0.3);
+    color: #fff;
+}
+.new-cover-box-upload-btn:hover:before {
+    opacity: 1;
+}
+.new-cover-box-upload-btn span {
+    z-index: 3;
+}
+
+@media (max-width: 770px) {
+    .form.form--contacts {
+        padding: 0;
+        margin-top: 0;
+    }
+    img.new-cover-box {
+        height: 400px;
+        object-fit: cover;
+    }
+    a.new-cover-box-upload-btn {
+        bottom: -65px;
+        left: 37px;
+    }
+}
+
+@media (max-width: 420px) {
+    .form.form--contacts {
+        padding: 0;
+        margin-top: 0;
+    }
+    img.new-cover-box {
+        height: 95%;
+        object-fit: cover;
+    }
+    a.new-cover-box-upload-btn {
+        bottom: 50px;
+        left: 40px;
+    }
+    div.cover-col {
+        padding-right: 15px !important;
+    }
+}
+
+@media (min-width: 1024px) and (max-width: 1030px) {
+    img.new-cover-box {
+        height: 500px;
+    }
+    .new-cover-box-upload-btn {
+        bottom: 45px;
+        left: 45px;
+    }
+}
+
+.sign__btn.clear-btn {
+    background-color: rgba(167,130,233,0.03);
+    border: 1px solid rgba(167,130,233,0.4);
+}
+.sign__btn.clear-btn:hover {
+    background-color: rgb(167 130 233 / 50%);
+}
+
+.grouped-inputs.new-game {
+    height: 87%;
+}
+
+.section--bg.darker:before {
+    background: linear-gradient(to bottom, rgb(27 34 46 / 93%) 0%, #1b222e 100%);
+}
+
+.big-input {
+    height: 60px;
+    border-radius: 10px;
+}

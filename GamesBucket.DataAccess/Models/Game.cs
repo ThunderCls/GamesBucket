@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace GamesBucket.DataAccess.Models
@@ -10,6 +13,7 @@ namespace GamesBucket.DataAccess.Models
     {
         [Key]
         public int Id { get; set; }
+        public Guid GameId { get; set; }
         public uint SteamAppId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
@@ -30,11 +34,20 @@ namespace GamesBucket.DataAccess.Models
         public bool Linux { get; set; }
         public bool Mac { get; set; }
         public bool Windows { get; set; }
-        public List<Genres> Genres { get; set; }
-        public List<Screenshots> Screenshots { get; set; }
-        public List<Movies> Movies { get; set; }
+        [DefaultValue(false)]
+        public bool Favorite { get; set; }
+        [DefaultValue(false)]
+        public bool InCatalog { get; set; }
+        public ICollection<Genres> Genres { get; set; }
+        public ICollection<Screenshots> Screenshots { get; set; }
+        public ICollection<Movies> Movies { get; set; }
         public double GameplayMain { get; set; }
         public double GameplayMainExtra { get; set; }
         public double GameplayCompletionist { get; set; }
+        [DefaultValue(false)]
+        public bool Played { get; set; }
+        
+        [NotMapped]
+        public IFormFile CoverPhoto { get; set; }
     }
 }

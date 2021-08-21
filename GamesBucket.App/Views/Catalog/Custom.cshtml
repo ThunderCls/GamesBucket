@@ -1,0 +1,165 @@
+﻿@model GamesBucket.Shared.Models.NewGameView
+
+@{
+	ViewData["Title"] = "title";
+}
+<!--**********************************
+Loader
+***********************************-->
+<div class="spinner-border-body">
+  <div class="loader"></div>
+</div>
+
+<!-- section -->
+<section class="section section--last section--first section--bg section-details-bg" 
+         style="background: url('/img/new_bg.jpg'); background-size: cover;">
+	<div class="container">
+		<div class="row center-form-row">
+			<div class="col-12 col-md-12 col-xl-9">
+				<div class="row">
+					<div class="col-12">
+						<form class="form form--contacts" id="new-game" enctype="multipart/form-data">
+							<div class="form-row no-gutters first-row">
+
+								<div class="col-md-5">
+									<div class="form-row">
+										<div class="col-md-12 cover-col">
+											<img class="new-cover-box" src="/img/cover-placeholder.png" alt="">
+											<a href="#" class="new-cover-box-upload-btn"><svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M308.1,277.95c0,35.7-28.9,64.6-64.6,64.6s-64.6-28.9-64.6-64.6s28.9-64.6,64.6-64.6S308.1,242.25,308.1,277.95zM440.3,116.05c25.8,0,46.7,20.9,46.7,46.7v122.4v103.8c0,27.5-22.3,49.8-49.8,49.8H49.8c-27.5,0-49.8-22.3-49.8-49.8v-103.9v-122.3l0,0c0-25.8,20.9-46.7,46.7-46.7h93.4l4.4-18.6c6.7-28.8,32.4-49.2,62-49.2h74.1c29.6,0,55.3,20.4,62,49.2l4.3,18.6H440.3zM97.4,183.45c0-12.9-10.5-23.4-23.4-23.4c-13,0-23.5,10.5-23.5,23.4s10.5,23.4,23.4,23.4C86.9,206.95,97.4,196.45,97.4,183.45zM358.7,277.95c0-63.6-51.6-115.2-115.2-115.2s-115.2,51.6-115.2,115.2s51.6,115.2,115.2,115.2S358.7,341.55,358.7,277.95z" style="fill: #9a72e1"/></svg> <span>Change Cover</span></a>
+											<input asp-for="CoverPhoto" accept=".jpeg,.png,.jpg,.bmp" hidden id="cover-image">
+										</div>
+									</div>
+								</div>
+
+								<div class="col-md-7">
+									<div class="form-row split-row">
+										<div class="col-md-12">
+											<input type="text" class="form__input" placeholder="Title" asp-for="Name">
+										</div>
+									</div>
+
+									<div class="form-row split-row">
+										<div class="col-md-6">
+											<input type="date" class="form__input" asp-for="ReleaseDate">
+										</div>
+										<div class="col-md-6">
+											<input type="text" class="form__input" placeholder="Developers" asp-for="Developers">
+										</div>
+									</div>
+
+									<div class="form-row split-row">
+										<div class="col-md-6">
+											<input type="text" class="form__input" placeholder="Genres" asp-for="Genres">
+										</div>
+										<div class="col-md-6">
+											<input type="text" class="form__input" placeholder="Languages" asp-for="SupportedLanguages">
+										</div>
+									</div>
+
+									<div class="form-row split-row">
+										<div class="col-md-6">
+											<input type="number" class="form__input" placeholder="Metacritic score" asp-for="MetaCriticScore">
+										</div>
+										<div class="col-md-6">
+											<input type="number" class="form__input" placeholder="Steam score" asp-for="SteamScore">
+										</div>
+									</div>
+
+									<div class="form-row">
+										<div class="col-md-6">
+											<div class="grouped-inputs new-game">
+												<span>Platforms</span>
+												<ul class="filter__checkboxes">
+													<li>
+														<input id="platform-win" type="checkbox" checked="" data-value="Windows" asp-for="Windows">
+														<label for="platform-win">Windows</label>
+													</li>
+													<li>
+														<input id="platform-linux" type="checkbox" checked="" data-value="Linux" asp-for="Linux">
+														<label for="platform-linux">Linux</label>
+													</li>
+													<li>
+														<input id="platform-mac" type="checkbox" checked="" data-value="Mac" asp-for="Mac">
+														<label for="platform-mac">Mac</label>
+													</li>
+												</ul>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="grouped-inputs new-game">
+												<span>Completion Time</span>
+												<input type="number" step="0.1" class="form__input" placeholder="Main" asp-for="GameplayMain">
+												<input type="number" step="0.1" class="form__input" placeholder="Main + Extra" asp-for="GameplayMainExtra">
+												<input type="number" step="0.1" class="form__input input-last" placeholder="Completionist" asp-for="GameplayCompletionist">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="form-row">
+								<div class="col-md-12">
+									<textarea class="form__textarea" placeholder="Description..." asp-for="ShortDescription"></textarea>
+									<button type="submit" class="form__btn">Save</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+<!-- end section -->
+
+<script >
+	function setupEventListener(){
+		let form = document.querySelector('form#new-game');
+		form.addEventListener('submit', newToCatalog);
+		
+		let selectImage = document.querySelector('a.new-cover-box-upload-btn');
+        selectImage.addEventListener('click', e => {
+        	e.preventDefault();
+			let coverImage = document.querySelector('input#cover-image');
+			coverImage.click();
+        });
+		
+		let coverImage = document.querySelector('input#cover-image');
+		coverImage.addEventListener('change', e => {
+			let coverImage = document.querySelector('img.new-cover-box');
+			let file = e.target.files[0];
+			coverImage.src = URL.createObjectURL(file);
+		});
+	}
+	
+	setupEventListener();
+	
+	async function newToCatalog(event){
+		await toggleLoader();
+        event.preventDefault();
+        let form = document.querySelector('form#new-game');
+        let url = location.origin;
+        try {
+        	let response = await fetch(`${url}/catalog/custom`, {
+				method : 'post',
+				body: new FormData(form)
+			});
+        	
+        	await toggleLoader();
+        	
+        	if(response.status === 201){
+				window.location = `${url}/catalog`; 
+				return;
+			} else {
+				showToastr("Error!", "An error occured while adding the game!", "error");
+				return;
+			}
+        } catch (e) {
+		 	console.log(e);
+		}
+		
+		await toggleLoader();
+		showToastr("Hmm!", "Something weird just happened!", "warning");
+    }
+    
+</script>

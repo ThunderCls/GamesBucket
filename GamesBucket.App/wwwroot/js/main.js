@@ -391,15 +391,15 @@ $(document).ready(function () {
 			var firstSlider = document.getElementById('filter__range');
 			noUiSlider.create(firstSlider, {
 				range: {
-					'min': 9,
-					'max': 99
+					'min': 1,
+					'max': 300
 				},
 				step: 1,
 				connect: true,
-				start: [18, 56],
+				start: [1, 150],
 				format: wNumb({
 					decimals: 0,
-					prefix: '$'
+					suffix: ' h'
 				})
 			});
 			var firstValues = [

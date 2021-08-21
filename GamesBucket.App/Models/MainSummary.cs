@@ -3,7 +3,7 @@
     public class MainSummary
     {
         public int TotalGames { get; set; }
-        public int TotalHours { get; set; }
-        public int TotalHoursPlayed { get; set; }
+        public double TotalHours { get; set; }
+        public double TotalHoursPlayed { get; set; }
     }
 }

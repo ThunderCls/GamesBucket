@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using GamesBucket.App.Models;
 using GamesBucket.DataAccess.Models;
@@ -24,14 +26,21 @@ namespace GamesBucket.App.Controllers
             _apiService = apiService;
         }
 
+        public IActionResult New()
+        {
+            return View();
+        }
+        
         public async Task<IActionResult> Index()
         {
-            //var games = await _gameService.GetGames();
+            var games = await _gameService.GetGames();
             var summary = new MainSummary
             {
-                TotalGames = 125,
-                TotalHours = 1345,
-                TotalHoursPlayed = 367
+                TotalGames = games.Count,
+                TotalHours = Math.Ceiling(games.Sum(g => g.GameplayMainExtra)),
+                TotalHoursPlayed = Math.Ceiling(games
+                    .Where(g => g.Played)
+                    .Sum(g => g.GameplayMainExtra))
             };
             
             return View(summary);
@@ -48,11 +57,18 @@ namespace GamesBucket.App.Controllers
             return View(gameResults);
         }
 
-        public async Task<IActionResult> Details(long appId)
+        public async Task<IActionResult> Details(uint appId)
         {
             var gameDetails = new Game();
             if (appId > 0)
             {
+                if (await _gameService.GameExistsBySteamAppId(appId))
+                {
+                    gameDetails = await _gameService.GetGameBySteamAppId(appId);
+                    gameDetails.InCatalog = true;
+                    return View(gameDetails);
+                }
+                
                 gameDetails = await _apiService.GetGameDetails(appId);
             }
 

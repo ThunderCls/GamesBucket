@@ -1449,9 +1449,9 @@ body::-webkit-scrollbar-thumb {
   text-overflow: ellipsis;
   word-wrap: break-word;
   width: 100%;
-  margin-bottom: 15px;
+  /*margin-bottom: 15px;*/
   color: #fff;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 400;
   transition: 0.5s;
 }
@@ -1701,7 +1701,8 @@ body::-webkit-scrollbar-thumb {
   }
   .card--catalog .card__title:last-child {
     border-radius: 0 6px 6px 0;
-    position: absolute;
+    position: unset;
+    width: 100%;
     bottom: 0;
     top: 0;
     right: 0;
@@ -1753,19 +1754,21 @@ body::-webkit-scrollbar-thumb {
   }
   .card--catalog .card__title {
     width: 100%;
-    padding: 20px;
+    /*padding: 20px;*/
     border-left: 1px solid rgba(167,130,233,0.06);
     border-right: 1px solid rgba(167,130,233,0.06);
     border-top: none;
   }
   .card--catalog .card__title h3 {
-    white-space: nowrap;
+    /*white-space: nowrap;*/
   }
   .card--catalog .card__title:last-child {
     position: relative;
     top: auto;
     bottom: auto;
     right: auto;
+    min-height: 100px;
+    max-height: 100px;
     border-radius: 0 0 6px 6px;
   }
   .card--catalog .card__actions {

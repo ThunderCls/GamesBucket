@@ -11,5 +11,14 @@ namespace GamesBucket.DataAccess
         public DbSet<Movies> Movies { get; set; }
         public DbSet<Screenshots> Screenshots { get; set; }
         public DbSet<SteamLibrary> SteamLibraries { get; set; }
+        
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Genres>()
+                .HasIndex(g => g.Name)
+                .IsUnique();
+            // .HasAlternateKey(c => c.Name)
+            // .HasName("AlternateKey_GenreName");
+        }
     }
 }

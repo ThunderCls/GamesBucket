@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\GamesBucket.DataAccess\GamesBucket.DataAccess.csproj" />
+      <ProjectReference Include="..\GamesBucket.Shared\GamesBucket.Shared.csproj" />
     </ItemGroup>
 
 </Project>

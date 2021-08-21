@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using GamesBucket.DataAccess.Models;
+using GamesBucket.Shared.Helpers;
 using HtmlAgilityPack;
 
 namespace GamesBucket.DataAccess.Services.ApiService.HLTB
@@ -13,6 +14,15 @@ namespace GamesBucket.DataAccess.Services.ApiService.HLTB
     public class HltbService
     {
         private readonly HttpClient _httpClient;
+
+        private List<string> removedStrings = new()
+        {
+            "Gold Edition",
+            "Deluxe Edition",
+            "Collector's Edition",
+            "Game of the Year Edition",
+            "GOTY"
+        };
 
         private const string GameBeatTimeEndpoint = "https://howlongtobeat.com/search_results?";
 
@@ -37,7 +47,11 @@ namespace GamesBucket.DataAccess.Services.ApiService.HLTB
         {
             //try
             {
-                var cleanedName = Regex.Replace(game.Name, @"[^a-zA-Z0-9()\s]", string.Empty);
+                var cleanedName = game.Name
+                    .RemoveSubstringPattern(@"\(([^\)]+)\)") // content between parenthesis
+                    .RemoveSubstringPattern(@"[^a-zA-Z0-9'\s]"); // special chars
+                removedStrings.ForEach(s => cleanedName = cleanedName.RemoveSubstringPattern($"{s}\\s*"));
+                
                 var content = new StringContent($"queryString={cleanedName}&t=games&sorthead=popular&sortd=0&plat=&" + 
                                                 "length_type=main&length_min=&length_max=&v=&f=&g=&detail=&randomize=0", 
                     Encoding.UTF8, "application/x-www-form-urlencoded");

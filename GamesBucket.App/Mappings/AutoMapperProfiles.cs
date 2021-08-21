@@ -1,6 +1,11 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using AutoMapper;
+using GamesBucket.App.Models;
 using GamesBucket.DataAccess.Models;
 using GamesBucket.DataAccess.Models.Dtos;
+using GamesBucket.Shared.Models;
 
 namespace GamesBucket.App.Mappings
 {
@@ -11,16 +16,20 @@ namespace GamesBucket.App.Mappings
             // https://www.parrisvarney.com/unflatten.html
 
             CreateMap<Game, SearchResult>().ReverseMap();
-            
-            //CreateMap<AppUser, UserProfileSecurityViewModel>().ReverseMap();
-            //    .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
-            //    .ForMember(dest => dest.NewPassword, opt => opt.MapFrom(src => src.Credentials.Password))
-            //    .ReverseMap();
-
-            //CreateMap<AppUser, UserViewModel>().ReverseMap();
-            //CreateMap<Intake, CaloriesListGraphViewModel>()
-            //    .ForMember(dest => dest.date, opt => opt.MapFrom(src => src.Date.ToString("d")))
-            //    .ForMember(dest => dest.achieved, opt => opt.MapFrom(src => src.))
+            CreateMap<Game, EditGameView>().ReverseMap();
+            CreateMap<Game, NewGameView>()
+                .ForMember(ng => ng.Genres,
+                    opt =>
+                        opt.MapFrom(g => string.Join(";", g.Genres)));
+            CreateMap<NewGameView, Game>()
+                .ForMember(g => g.Genres,
+                    opt =>
+                        opt.MapFrom((s, d) =>
+                        {
+                            var genres = s.Genres.Split(";", StringSplitOptions.RemoveEmptyEntries);
+                            var genresList = genres.Select(g => new Genres {Name = g.Trim()});
+                            return genresList;
+                        }));
         }
     }
 }

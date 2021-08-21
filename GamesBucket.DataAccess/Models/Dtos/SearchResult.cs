@@ -6,6 +6,7 @@ namespace GamesBucket.DataAccess.Models.Dtos
 {
     public class SearchResult
     {
+        public Guid GameId { get; set; }
         public long SteamAppId { get; set; }
         public string Name { get; set; }
         public GameDetails.Platforms Platforms { get; set; }

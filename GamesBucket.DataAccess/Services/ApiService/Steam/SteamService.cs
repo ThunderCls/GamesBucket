@@ -6,10 +6,10 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using GameList.DataAccess;
 using GamesBucket.DataAccess.Models;
 using GamesBucket.DataAccess.Models.Dtos;
 using GamesBucket.DataAccess.Services.ApiService.HLTB;
+using GamesBucket.Shared.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -54,14 +54,17 @@ namespace GamesBucket.DataAccess.Services.ApiService.Steam
             var appsList = await GetGameIdsByTitleLocal(gameTitle);
             if (!appsList.Any()) return searchGamesList;
             
-            var searchTasks = appsList.Select(GetGameInfo);
-            var results = await Task.WhenAll(searchTasks); // run every task in "parallel"
+            // run every task in "parallel"
+            // var searchTasks = appsList.Select(GetGameInfo);
+            // var results = await Task.WhenAll(searchTasks); 
+            var results = await 
+                appsList.ParallelForEachAsync(GetGameInfo, 50);
 
             searchGamesList.AddRange(results.Where(gameResult => gameResult != null));
             return searchGamesList;
         }
 
-        public async Task<SearchResult> GetGameInfo(GamesBucket.DataAccess.Services.ApiService.Steam.GameList.App app)
+        public async Task<SearchResult> GetGameInfo(GameList.App app)
         {
             //try
             {
@@ -224,29 +227,29 @@ namespace GamesBucket.DataAccess.Services.ApiService.Steam
             return gameDetails;
         }
 
-        private async Task<List<GamesBucket.DataAccess.Services.ApiService.Steam.GameList.App>> GetGameIdsByTitleLocal(string gameTitle)
+        private async Task<List<GameList.App>> GetGameIdsByTitleLocal(string gameTitle)
         {
             return await _dbContext.SteamLibraries.Where(g => 
                     EF.Functions.Like(g.Name, $"%{gameTitle}%"))
-                .Select(g => new GamesBucket.DataAccess.Services.ApiService.Steam.GameList.App()
+                .Select(g => new GameList.App()
                 {
                     Appid = g.SteamAppId,
                     Name = g.Name
                 }).ToListAsync();
         }
         
-        private async Task<List<GamesBucket.DataAccess.Services.ApiService.Steam.GameList.App>> GetGameIdsByTitleSteam(string gameTitle)
+        private async Task<List<GameList.App>> GetGameIdsByTitleSteam(string gameTitle)
         {
-            var appsList = new List<GamesBucket.DataAccess.Services.ApiService.Steam.GameList.App>();
+            var appsList = new List<GameList.App>();
             var url = $"{GameListEndpoint}key={_steamKey}&max_results={MaxResults}";
             try
             {
                 // search games by title
-                GamesBucket.DataAccess.Services.ApiService.Steam.GameList appList = null; 
+                GameList appList = null; 
                 do
                 {
                     var games = await _httpClient.GetStringAsync(url);
-                    appList = JsonSerializer.Deserialize<GamesBucket.DataAccess.Services.ApiService.Steam.GameList>(games);
+                    appList = JsonSerializer.Deserialize<GameList>(games);
 
                     if (appList != null && appList.ApiResponse != null)
                     {
@@ -276,37 +279,33 @@ namespace GamesBucket.DataAccess.Services.ApiService.Steam
             await _dbContext.Database.ExecuteSqlRawAsync("delete from SteamLibraries");
             
             var url = $"{GameListEndpoint}key={_steamKey}&max_results={MaxResults}";
-            //try
+            GameList appList = null;
+            do
             {
-                GamesBucket.DataAccess.Services.ApiService.Steam.GameList appList = null;
-                do
+                var games = await _httpClient.GetStringAsync(url);
+                appList = JsonSerializer.Deserialize<GameList>(games);
+                if (appList != null && appList.ApiResponse != null)
                 {
-                    var games = await _httpClient.GetStringAsync(url);
-                    appList = JsonSerializer.Deserialize<GamesBucket.DataAccess.Services.ApiService.Steam.GameList>(games);
-                    if (appList != null && appList.ApiResponse != null)
-                    {
-                        var gamesList = appList.ApiResponse.Apps
-                            .Select(a => new SteamLibrary
-                            {
-                                SteamAppId = a.Appid,
-                                Name = a.Name
-                            });
-
-                        await _dbContext.SteamLibraries.AddRangeAsync(gamesList);
-                        await _dbContext.SaveChangesAsync();
-                        
-                        if (appList.ApiResponse.HaveMoreResults)
+                    var gamesList = appList.ApiResponse.Apps
+                        .Select(a => new SteamLibrary
                         {
-                            url = $"{GameListEndpoint}key={_steamKey}" +
-                                  $"&max_results={MaxResults}&last_appid={appList.ApiResponse.LastAppid}";
-                        }
-                    }
+                            SteamAppId = a.Appid,
+                            Name = a.Name
+                        });
+
+                    await _dbContext.SteamLibraries.AddRangeAsync(gamesList);
+                    await _dbContext.SaveChangesAsync();
                     
-                    // cooldown
-                    Thread.Sleep(50);
-                } while (appList?.ApiResponse != null && appList.ApiResponse.HaveMoreResults);
-            }
-            //catch { }
+                    if (appList.ApiResponse.HaveMoreResults)
+                    {
+                        url = $"{GameListEndpoint}key={_steamKey}" +
+                              $"&max_results={MaxResults}&last_appid={appList.ApiResponse.LastAppid}";
+                    }
+                }
+                
+                // cooldown
+                Thread.Sleep(50);
+            } while (appList?.ApiResponse != null && appList.ApiResponse.HaveMoreResults);
         }
     }
 }
