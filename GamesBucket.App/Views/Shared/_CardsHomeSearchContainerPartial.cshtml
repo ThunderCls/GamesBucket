@@ -1,0 +1,41 @@
+﻿@using GamesBucket.App.Models
+@using GamesBucket.Shared.Helpers
+@model PagedResult<GamesBucket.DataAccess.Models.Dtos.SearchResult>
+
+@foreach (var game in @Model.Results)
+{
+	string gameCardImage; 
+	if(!string.IsNullOrEmpty(game.BoxImage))
+		gameCardImage = game.BoxImage;
+	else if (!string.IsNullOrEmpty(game.HeaderImage))
+		gameCardImage = game.HeaderImage;
+	else
+		gameCardImage = @"/img/cover-placeholder.png";
+	
+	<!-- card -->
+	<div class="col-12 col-sm-6 col-md-4 col-xl-3 col-xl-20 game-card">
+		<div class="card card--catalog">
+			<a asp-controller="Home" asp-action="Details" asp-route-appId="@game.SteamAppId" target="_blank" class="card__cover">
+				<img src="@gameCardImage" alt="">
+			</a>
+
+			<div class="card__title">
+				<h3><a asp-controller="Home" asp-action="Details" asp-route-appId="@game.SteamAppId" target="_blank">@game.Name</a></h3>
+			</div>
+		</div>
+	</div>
+	<!-- end card -->
+}
+
+@{
+	var paginatorModel = new PaginatorViewModel
+	{
+		CurrentPage = Model.CurrentPage,
+		PageSize = Model.PageSize,
+		ResultsCount = Model.Results.Count,
+		RowCount = Model.RowCount,
+		HasNextPage = Model.HasNextPage,
+		HasPreviousPage = Model.HasPreviousPage
+	};
+}
+<partial name="_PaginatorHomePartial" model="paginatorModel"/>

@@ -6,6 +6,7 @@ using GamesBucket.App.Models;
 using GamesBucket.DataAccess.Models;
 using GamesBucket.DataAccess.Models.Dtos;
 using GamesBucket.Shared.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace GamesBucket.App.Mappings
 {
@@ -16,7 +17,7 @@ namespace GamesBucket.App.Mappings
             // https://www.parrisvarney.com/unflatten.html
 
             CreateMap<Game, SearchResult>().ReverseMap();
-            CreateMap<Game, EditGameView>().ReverseMap();
+            CreateMap<Game, EditGameViewModel>().ReverseMap();
             CreateMap<Game, NewGameView>()
                 .ForMember(ng => ng.Genres,
                     opt =>
@@ -30,6 +31,10 @@ namespace GamesBucket.App.Mappings
                             var genresList = genres.Select(g => new Genres {Name = g.Trim()});
                             return genresList;
                         }));
+            CreateMap<AppUser, ProfileDetailsViewModel>().ReverseMap();
+            CreateMap<AppUser, ProfileSecurityViewModel>().ReverseMap();
+            //CreateMap<AppUser, IdentityUser>().ReverseMap();
+            CreateMap<AppUser, UserRegisterViewModel>().ReverseMap();
         }
     }
 }

@@ -391,12 +391,12 @@ $(document).ready(function () {
 			var firstSlider = document.getElementById('filter__range');
 			noUiSlider.create(firstSlider, {
 				range: {
-					'min': 1,
+					'min': 0,
 					'max': 300
 				},
 				step: 1,
 				connect: true,
-				start: [1, 150],
+				start: [0, 150],
 				format: wNumb({
 					decimals: 0,
 					suffix: ' h'

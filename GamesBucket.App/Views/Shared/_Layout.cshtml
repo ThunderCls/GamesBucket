@@ -18,15 +18,20 @@
 	<link rel="stylesheet" href="~/css/custom.css" asp-append-version="true">
 	<link rel="stylesheet" href="~/libs/jquery-confirm/jquery-confirm.min.css">
 	<link rel="stylesheet" href="~/libs/material-floating-button/mfb.min.css">
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+	<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
 
+	<!-- JS -->
+	<script src="~/js/jquery-3.5.1.min.js"></script>
+	
 	<!-- Favicons -->
 	<link rel="icon" type="image/png" href="~/icon/favicon-32x32.png" sizes="32x32">
 	<link rel="apple-touch-icon" href="~/icon/favicon-32x32.png">
 
-	<meta name="description" content="Digital marketplace HTML Template by Dmitry Volkov">
+	<meta name="description" content="Digital games library to keep track of your own games list and preferences">
 	<meta name="keywords" content="">
-	<meta name="author" content="Dmitry Volkov">
-	<title>GameBucket – Digital Games Bucket List</title>
+	<meta name="author" content="Yuniet Piloto">
+	<title>GamesBucket – Digital Games Bucket</title>
 
 </head>
 <body>
@@ -50,7 +55,7 @@
 							</button>
 
 							<a asp-controller="Home" asp-action="Index" class="header__logo">
-								<img src="~/img/logo.svg" alt="">
+								<img src="~/img/logo-big.png" alt="">
 							</a>
 
 							<ul class="header__nav">
@@ -67,8 +72,11 @@
 							</ul>
 
 							<div class="header__actions header-actions-right">
-								<a href="signin.html" class="header__login">
-									<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'><path d='M192,176V136a40,40,0,0,1,40-40H392a40,40,0,0,1,40,40V376a40,40,0,0,1-40,40H240c-22.09,0-48-17.91-48-40V336' style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px'/><polyline points='288 336 368 256 288 176' style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px'/><line x1='80' y1='256' x2='352' y2='256' style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px'/></svg>
+								<a asp-controller="Profile" asp-action="Index" class="header__login">
+									<svg width="100" height="100" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<path d="M30.1562 18.4375C29.9265 21.5354 27.5781 24.0625 24.9999 24.0625C22.4218 24.0625 20.0693 21.5359 19.8437 18.4375C19.6093 15.2148 21.8945 12.8125 24.9999 12.8125C28.1054 12.8125 30.3906 15.2734 30.1562 18.4375Z" stroke="#a782e9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+										<path d="M24.9999 27.8125C19.9022 27.8125 14.7284 30.625 13.771 35.9336C13.6556 36.5734 14.0177 37.1875 14.6874 37.1875H35.3124C35.9827 37.1875 36.3448 36.5734 36.2294 35.9336C35.2714 30.625 30.0976 27.8125 24.9999 27.8125Z" stroke="#a782e9" stroke-width="2" stroke-miterlimit="10"/>
+									</svg>
 									<span>Profile</span>
 								</a>
 							</div>
@@ -83,8 +91,8 @@
 				<div class="row">
 					<div class="col-12">
 						<div class="header__content">
-							<form asp-controller="Catalog" asp-action="Search" class="header__form">
-								<input name="query" type="text" class="header__input header-input-larger" placeholder="Search catalog...">								
+							<form asp-controller="Catalog" asp-action="Search" class="header__form" method="get">
+								<input required name="query" type="text" class="header__input header-input-larger" placeholder="Search catalog...">								
 								<button class="header__btn" type="submit">
 									<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'><path d='M221.09,64A157.09,157.09,0,1,0,378.18,221.09,157.1,157.1,0,0,0,221.09,64Z' style='fill:none;stroke-miterlimit:10;stroke-width:32px'/><line x1='338.29' y1='338.29' x2='448' y2='448' style='fill:none;stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px'/></svg>
 								</button>
@@ -150,13 +158,13 @@
 
 				<div class="col-12">
 					<div class="footer__wrap">
-						<a class="footer__logo" href="index.html">
-							<img src="~/img/logo.svg" alt="">
-						</a>
+						@* <a class="footer__logo" href="index.html"> *@
+						@* 	<img src="~/img/logo.svg" alt=""> *@
+						@* </a> *@
 
-						<span class="footer__copyright">© GB, 2021 
-							<br> Design by <a href="https://themeforest.net/user/dmitryvolkov/portfolio">Dmitry Volkov</a>
-							<br>Programmed by <a href="https://github.com/ThunderCls">Yuniet Piloto</a> 
+						<span class="footer__copyright">© USA, @DateTime.Now.Year 
+							<br>Original Design by <a href="https://themeforest.net/user/dmitryvolkov/portfolio">Dmitry Volkov</a>
+							<br>Edited & Programmed by <a href="https://github.com/ThunderCls">Yuniet Piloto</a> 
 						</span>
 					</div>
 				</div>
@@ -166,7 +174,6 @@
 	<!-- end footer -->
 
 	<!-- JS -->
-	<script src="~/js/jquery-3.5.1.min.js"></script>
 	<script src="~/js/bootstrap.bundle.min.js"></script>
 	<script src="~/js/owl.carousel.min.js"></script>
 	<script src="~/js/jquery.magnific-popup.min.js"></script>
@@ -180,6 +187,11 @@
 	<script src="~/libs/toastr/js/toastr.min.js"></script>
 	<script src="~/libs/jquery-confirm/jquery-confirm.min.js"></script>
 	<script src="~/libs/material-floating-button/mfb.min.js"></script>
+	<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
 
+	@await RenderSectionAsync("Scripts", false);
 </body>
 </html>

@@ -1,4 +1,4 @@
-﻿@model GamesBucket.App.Models.MainSummary
+﻿@model GamesBucket.App.Models.SummaryViewModel
 
 @{
     ViewData["Title"] = "Home Page";
@@ -10,31 +10,36 @@
         <div class="row">
             <!-- title -->
             <div class="col-md-12 mb-5 mt-5 p-2" style="text-align: center;">
-                <span class="section__title--title title-text">Game </span>
+                <span class="section__title--title title-text">Games </span>
                 <span class="section__title--title title-text-secondary">Bucket</span>
-            </div>				
+            </div>
             <!-- end title -->
         </div>
+        
         <div class="row mb-5 mt-5" style="text-align: center;">
-            <div class="col-md-4 text-white mb-5">
+            <div class="col-md-3 text-white mb-5">
                 <div id="countup" class="text-bignumber">@Model.TotalGames</div>
-                <div class="text-numbers-desc">Games Saved</div>					
+                <div class="text-numbers-desc">Games Added</div>
             </div>
-            <div class="col-md-4 text-white mb-5">
+            <div class="col-md-3 text-white mb-5">
                 <div id="countup" class="text-bignumber">@Model.TotalHours</div>
                 <div class="text-numbers-desc">Hours to play</div>					
             </div>
-            <div class="col-md-4 text-white mb-5">
+            <div class="col-md-3 text-white mb-5">
+                <div id="countup" class="text-bignumber">@Model.TotalGamesPlayed</div>
+                <div class="text-numbers-desc">Games Played</div>					
+            </div>
+            <div class="col-md-3 text-white mb-5">
                 <div id="countup" class="text-bignumber">@Model.TotalHoursPlayed</div>
                 <div class="text-numbers-desc">Hours played</div>					
             </div>
         </div>
 
         <div class="row justify-content-center mt-5 mb-5" style="text-align: center;">
-            <div class="col-lg-2 col-md-4 col-10 mt-lg-5 mb-lg-2">
+            <div class="col-lg-2 col-md-4 col-10 mt-lg-3 mb-lg-5">
                 <button class="sign__btn" onclick="window.location = `${location.origin}/catalog`">View Catalog</button>
             </div>
-            <div class="col-lg-2 col-md-4 col-10 mt-lg-5 mb-lg-2">
+            <div class="col-lg-2 col-md-4 col-10 mt-lg-3 mb-lg-5">
                 <button class="sign__btn clear-btn" onclick="window.location = `${location.origin}/home/new`">Add Game</button>
             </div>
         </div>

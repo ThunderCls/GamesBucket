@@ -1,5 +1,5 @@
 ﻿@using GamesBucket.Shared.Helpers
-@model List<GamesBucket.DataAccess.Models.Dtos.SearchResult>
+@model PagedResult<GamesBucket.DataAccess.Models.Dtos.SearchResult>
 @{
 	ViewData["Title"] = "title";
 }
@@ -11,7 +11,7 @@
 			<div class="col-12">
 				<div class="section__wrap">
 					<!-- section title -->
-					<h2 class="section__title">Search Results <span>(@Model.Count games)</span></h2>
+					<h2 class="section__title">Search Results <span>(@Model.RowCount games)</span></h2>
 					<!-- end section title -->
 
 					<!-- breadcrumb -->
@@ -30,141 +30,50 @@
 <!-- section -->
 <section class="section section--last section--catalog">
 	<div class="container">
-		@if (Model.Any())
+		@if (Model.Results.Any())
         {
 	    <div class="row">
 			<div class="col-12">
 				<div class="sort">
+					
+					<form asp-controller="Home" asp-action="Search" method="get" class="home-search">
+						<div class="filter__group filter__group--sort">
+						
+							<label for="keywords" class="filter__label">Search</label>
+							<div class="filter__select-wrap filter__group--sort filter-query">
+								<input name="query" id="keywords" type="text" class="filter__input" placeholder="Search game...">
+							</div>
+							<div class="filter__select-wrap filter__group--sort btn">
+								<button class="filter__btn">SEARCH</button>
+							</div>
 
-					<div class="filter__group filter__group--sort">
-						<label for="keywords" class="filter__label">Keyword:</label>
-						<div class="filter__select-wrap">
-							<input name="keywords" onkeyup="applyFilter()" type="text" class="filter__input" placeholder="Keyword">
 						</div>
-					</div>
+					</form>
 
 					<div class="filter__group filter__group--sort">
-						<label for="genres" class="filter__label">Genres:</label>
-
+						<label for="page-size" class="filter__label">Page Size</label>
 						<div class="filter__select-wrap">
-							<select onchange="applyFilter()" name="genres" id="genres" class="filter__select">
-								<option value="0">All Genres</option>
-								@{
-									var genres = new HashSet<string>();
-									foreach (var genreList in Model.Select(g => g?.Genres))
-									{
-										if (genreList != null)
-										{
-											var genreStrings = genreList.Select(ge => ge?.Name);
-											genres.UnionWith(genreStrings.Where(s => s != null));
-										}
-									}
-
-									var orderedGenres = genres.OrderBy(g => g).ToList();
-									for (int i = 1; i < orderedGenres.Count; i++)
-									{
-										<option value="@i">@orderedGenres[i - 1]</option>
-									}
-								}
+							<select name="page-size" id="page-size" class="filter__select"
+							        onchange="filterGamesHomeSearch()">
+								<option value="15">15</option>
+								<option value="30">30</option>
+								<option value="45">45</option>
+								<option value="60">60</option>
 							</select>
 						</div>
 					</div>
 
-					<div class="filter__group filter__group--sort">
-						<label for="sort" class="filter__label">Sort by:</label>
-						<div class="filter__select-wrap">
-							<select onchange="applyFilter()" name="sort" id="sort" class="filter__select">
-								<option value="0">None</option>
-								<option value="1">Newest</option>
-								<option value="2">Oldest</option>
-							</select>
-						</div>
-					</div>
-
-					<div class="sort__results">Found @Model.Count games</div>
+					<div class="sort__results">Found @Model.RowCount games</div>
+					
 				</div>
 			</div>
 		</div>
 
 		<!-- catalog -->
 		<div class="row category" id="result-container">
-			@{
-				int pageNumber = 1;
-				var card = 0;
-				const int MaxCards = 15;
-			}
-			@foreach (var game in @Model)
-			{
-				card++;
-				if (card >= MaxCards)
-				{
-					pageNumber++;
-					card = 0;
-				}
-
-				var genreList = game.Genres != null
-					? string.Join(";", @game.Genres.Select(g => g.Name.ToLower()))
-					: "";
-				var releaseDate = game.ReleaseDate != DateTime.MinValue
-					? game.ReleaseDate.ToUnixTimeStamp()
-					: DateTime.MaxValue.ToUnixTimeStamp();
-				
-				string gameCardImage; 
-				if(!string.IsNullOrEmpty(game.BoxImage))
-					gameCardImage = game.BoxImage;
-				else if (!string.IsNullOrEmpty(game.HeaderImage))
-					gameCardImage = game.HeaderImage;
-				else
-					gameCardImage = @"/img/cover-placeholder.png";
-				
-				<!-- card -->
-				<div class="col-12 col-sm-6 col-md-4 col-xl-3 col-xl-20 game-card"
-				     data-page="@pageNumber"
-				     data-release-date="@releaseDate"
-				     data-genre="@genreList">
-					<div class="card card--catalog">
-						<a asp-controller="Home" asp-action="Details" asp-route-appId="@game.SteamAppId" target="_blank" class="card__cover">
-							<img src="@gameCardImage" alt="">
-						</a>
-
-						<div class="card__title">
-							<h3><a asp-controller="Home" asp-action="Details" asp-route-appId="@game.SteamAppId" target="_blank">@game.Name</a></h3>
-						</div>
-					</div>
-				</div>
-				<!-- end card -->
-
-			}
-
-			@if (Model.Any())
-			{
-				<!-- paginator -->
-				<div class="col-12">
-					<div class="paginator">
-						<div class="paginator__counter">
-							15 from @Model.Count
-						</div>
-
-						<ul class="paginator__wrap">
-							<li class="paginator__item paginator__item--prev">
-								<a href="#">
-									<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'><polyline points='244 400 100 256 244 112' style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px'/><line x1='120' y1='256' x2='412' y2='256' style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px'/></svg>
-								</a>
-							</li>
-							<li class="paginator__item paginator__item--active"><a href="#">1</a></li>
-							<li class="paginator__item"><a href="#">2</a></li>
-							<li class="paginator__item"><a href="#">3</a></li>
-							<li class="paginator__item paginator__item--next">
-								<a href="#">
-									<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'><polyline points='268 112 412 256 268 400' style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px'/><line x1='392' y1='256' x2='100' y2='256' style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px'/></svg>
-								</a>
-							</li>
-						</ul>
-					</div>
-				</div>
-				<!-- end paginator -->
-			}
+			<partial name="_CardsHomeSearchContainerPartial" model="Model"/>
 		</div><!-- end catalog -->
+		                       
         <!-- floating action button -->
         <ul id="menu" class="mfb-component--br mfb-zoomin" data-mfb-toggle="hover">
 	        <li class="mfb-component__wrap">

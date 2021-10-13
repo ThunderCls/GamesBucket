@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<!-- CSS -->
+	<link rel="stylesheet" href="~/css/bootstrap-reboot.min.css">
+	<link rel="stylesheet" href="~/css/bootstrap-grid.min.css">
+	<link rel="stylesheet" href="~/css/owl.carousel.min.css">
+	<link rel="stylesheet" href="~/css/magnific-popup.css">
+	<link rel="stylesheet" href="~/css/nouislider.min.css">
+	<link rel="stylesheet" href="~/css/jquery.mCustomScrollbar.min.css">
+	<link rel="stylesheet" href="~/css/paymentfont.min.css">
+	<link rel="stylesheet" href="~/libs/toastr/css/toastr.min.css">
+	<link rel="stylesheet" href="~/css/main.css" asp-append-version="true">
+	<link rel="stylesheet" href="~/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="~/css/custom.css" asp-append-version="true">
+	<link rel="stylesheet" href="~/libs/jquery-confirm/jquery-confirm.min.css">
+	<link rel="stylesheet" href="~/libs/material-floating-button/mfb.min.css">
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+	<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+
+	<!-- JS -->
+	<script src="~/js/jquery-3.5.1.min.js"></script>
+	
+	<!-- Favicons -->
+	<link rel="icon" type="image/png" href="~/icon/favicon-32x32.png" sizes="32x32">
+	<link rel="apple-touch-icon" href="~/icon/favicon-32x32.png">
+
+	<meta name="description" content="Digital marketplace HTML Template by Dmitry Volkov">
+	<meta name="keywords" content="">
+	<meta name="author" content="Dmitry Volkov">
+	<title>GameBucket – Digital Games Bucket List</title>
+
+</head>
+<body>
+	<!--**********************************
+	Loader
+	***********************************-->
+	<div class="spinner-border-body">
+	  <div class="loader"></div>
+	</div>
+	
+	@RenderBody()
+
+	<!-- JS -->
+	<script src="~/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/owl.carousel.min.js"></script>
+	<script src="~/js/jquery.magnific-popup.min.js"></script>
+	<script src="~/js/wNumb.js"></script>
+	<script src="~/js/nouislider.min.js"></script>
+	<script src="~/js/jquery.mousewheel.min.js"></script>
+	<script src="~/js/jquery.mCustomScrollbar.min.js"></script>
+	<script src="~/js/main.js" asp-append-version="true"></script>
+	<script src="~/js/countup.min.js"></script>
+	<script src="~/js/game.js" asp-append-version="true"></script>
+	<script src="~/libs/toastr/js/toastr.min.js"></script>
+	<script src="~/libs/jquery-confirm/jquery-confirm.min.js"></script>
+	<script src="~/libs/material-floating-button/mfb.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
+
+	@await RenderSectionAsync("Scripts", false);
+</body>
+</html>

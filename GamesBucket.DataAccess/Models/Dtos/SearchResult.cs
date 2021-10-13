@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using GamesBucket.DataAccess.Services.ApiService.Steam;
+using GamesBucket.DataAccess.Models.Steam;
+using GamesBucket.DataAccess.Services.Api.Steam;
 
 namespace GamesBucket.DataAccess.Models.Dtos
 {

@@ -1,0 +1,37 @@
+﻿@{
+    ViewData["Title"] = "Reset Password";
+	Layout = "_EmptyLayout";
+}
+
+<!-- sign in -->
+<div class="sign section--full-bg" style="background: black">
+	<div class="container">
+		<div class="row">
+			<div class="col-12">
+				<div class="sign__content">
+					<!-- authorization form -->
+					<form asp-controller="Account" asp-action="Forgot" class="sign__form">
+						<img src="/img/logo-big.png" alt="" class="header-form-logo">
+
+						<div class="sign__group">
+							<input type="email" required name="email" class="sign__input" placeholder="Email">
+						</div>
+
+						<button class="sign__btn">Send</button>
+						<span class="sign__text">Check your email to reset your password</span>
+					</form>
+					<!-- end authorization form -->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- end sign in -->
+
+@section Scripts {
+	<script >
+     	$().ready(function () {
+     		$('form').validate();
+    	}); 
+    </script>    
+}

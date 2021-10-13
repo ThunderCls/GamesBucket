@@ -1,5 +1,5 @@
 ﻿@using GamesBucket.Shared.Helpers
-@model List<GamesBucket.DataAccess.Models.Game>
+@model PagedResult<GamesBucket.DataAccess.Models.Game>
 
 @{
     ViewData["Title"] = "Games List";
@@ -12,7 +12,7 @@
 			<div class="col-12">
 				<div class="section__wrap">
 					<!-- section title -->
-					<h2 class="section__title">Catalog <span>(@Model.Count games)</span></h2>
+					<h2 class="section__title">Catalog <span>(@Model.Results.Count games)</span></h2>
 					<!-- end section title -->
 
 					<!-- breadcrumb -->
@@ -31,7 +31,7 @@
 <!-- section -->
 <section class="section section--last section--catalog">
 	<div class="container">
-		@if (@Model.Any())
+		@if (@Model.Results.Any())
 		{
 			<!-- catalog -->
 			<div class="row catalog">
@@ -45,15 +45,29 @@
 								<div class="collapse filter-wrap__content" id="collapseFilter">
 									<!-- filter -->
 									<div class="filter">
-										<h4 class="filter__title">Filters <button type="button">Clear all</button></h4>
+										<h4 class="filter__title">Filters <button type="button" onclick="resetCatalogFilters()">Clear all</button></h4>
 
 										<div class="filter__group">
-											<label for="keywords" class="filter__label">Keyword:</label>
-											<input type="text" onkeyup="applyCatalogFilters(this)" name="keywords" id="keywords" class="filter__input" placeholder="Keyword">
+											<label for="keywords" class="filter__label">Keyword</label>
+											<input type="text" name="keywords" id="keywords" class="filter__input" placeholder="Keyword">
+											@* onkeyup="applyCatalogFilters(this)" *@
 										</div>
 
 										<div class="filter__group">
-											<label for="sort-release-time" class="filter__label">Release Date:</label>
+											<label for="page-size" class="filter__label">Page Size</label>
+                                                                                
+											<div class="filter__select-wrap">
+												<select name="page-size" id="page-size" class="filter__select">
+													<option value="12">12</option>
+													<option value="24">24</option>
+													<option value="48">48</option>
+													<option value="64">64</option>
+												</select>
+											</div>
+										</div>
+										
+										<div class="filter__group">
+											<label for="sort-release-time" class="filter__label">Release Date</label>
 
 											<div class="filter__select-wrap">
 												<select onchange="document.querySelector('#sort-beat-time').value = 0" name="sort-release-time" id="sort-release-time" class="filter__select">
@@ -65,19 +79,19 @@
 										</div>
 										
 										<div class="filter__group">
-                                        	<label for="sort-beat-time" class="filter__label">Beat Time:</label>
+                                        	<label for="sort-beat-time" class="filter__label">Beat Time</label>
 
                                         	<div class="filter__select-wrap">
                                         		<select onchange="document.querySelector('#sort-release-time').value = 0" name="sort-beat-time" id="sort-beat-time" class="filter__select">
                                         			<option value="0">None</option>
-                                        			<option value="1">Shortest</option>
-                                        			<option value="2">Longest</option>
+                                        			<option value="1">Longest</option>
+                                        			<option value="2">Shortest</option>
                                         		</select>
                                         	</div>
                                         </div>
 
 										<div class="filter__group">
-											<label class="filter__label">Hours:</label>
+											<label class="filter__label">Hours</label>
 
 											<div class="filter__range">
 												<div id="filter__range-start"></div>
@@ -88,11 +102,11 @@
 										</div>
 
 										<div class="filter__group">
-											<label class="filter__label">Genres:</label>
+											<label class="filter__label">Genres</label>
 											<ul class="filter__checkboxes">
 												@{
 													var genres = new HashSet<string>();
-													foreach (var genreList in Model.Select(g => g?.Genres))
+													foreach (var genreList in Model.Results.Select(g => g?.Genres))
 													{
 														if (genreList != null)
 														{
@@ -113,9 +127,10 @@
 												}
 											</ul>
 										</div>
-
+										
 										<div class="filter__group">
-											<button class="filter__btn" type="button" onclick="applyCatalogFilters()">APPLY FILTER</button>
+											@* <button class="filter__btn" type="button" onclick="applyCatalogFilters()">APPLY FILTER</button> *@
+											<button class="filter__btn" type="button" onclick="getGamesPage()">APPLY FILTER</button>
 										</div>
 									</div>
 									<!-- end filter -->
@@ -129,81 +144,7 @@
 				<!-- content wrap -->
 				<div class="col-12 col-lg-80">
 					<div class="row" id="result-container">
-						@foreach (var game in @Model)
-						{
-							var genreList = game.Genres != null
-								? string.Join(";", @game.Genres.Select(g => g.Name.ToLower()))
-								: "";
-							var releaseDate = game.ReleaseDate != DateTime.MinValue
-								? game.ReleaseDate.ToUnixTimeStamp()
-								: DateTime.MaxValue.ToUnixTimeStamp();
-							
-							string gameCardImage; 
-							if(!string.IsNullOrEmpty(game.BoxImage))
-								gameCardImage = game.BoxImage;
-							else if (!string.IsNullOrEmpty(game.HeaderImage))
-								gameCardImage = game.HeaderImage;
-							else
-								gameCardImage = @"/img/cover-placeholder.png";
-							
-							var gameId = game.SteamAppId == 0
-								? game.GameId.ToString()
-								: game.SteamAppId.ToString();
-
-							<!-- card -->
-							<div class="col-12 col-sm-6 col-md-4 col-xl-3 game-card"
-							     data-release-date="@releaseDate"
-							     data-genre="@genreList"
-							     data-beat-time="@game.GameplayMainExtra">
-								<div class="card card--catalog">
-									<a asp-controller="Catalog" asp-action="Details" asp-route-appId="@gameId" class="card__cover">
-										<img src="@gameCardImage" alt="">
-										@if (game.Favorite)
-										{
-											<span class="card__new">Favorite</span>
-										}
-									</a>
-
-									<div class="card__title">
-										<h3><a asp-controller="Catalog" asp-action="Details" asp-route-appId="@gameId">@game.Name</a></h3>
-									</div>
-
-									<div class="card__actions">
-										<button class="btn-delete" type="button" data-steamid="@gameId" data-action="remove" onclick="editCatalog(null, this.dataset.action, this.dataset.steamid)"><i class="fa fa-times button-icon" aria-hidden="true"></i> Remove</button>
-
-										<button class="card__favorite" type="button" onclick="addToFavorites(@gameId)">
-											<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'><path d='M352.92,80C288,80,256,144,256,144s-32-64-96.92-64C106.32,80,64.54,124.14,64,176.81c-1.1,109.33,86.73,187.08,183,252.42a16,16,0,0,0,18,0c96.26-65.34,184.09-143.09,183-252.42C447.46,124.14,405.68,80,352.92,80Z' style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px'/></svg>
-										</button>
-									</div>
-								</div>
-							</div>
-							<!-- end card -->
-						}
-						<!-- paginator -->
-						<div class="col-12">
-							<div class="paginator">
-								<div class="paginator__counter">
-									12 from 144
-								</div>
-
-								<ul class="paginator__wrap">
-									<li class="paginator__item paginator__item--prev">
-										<a href="#">
-											<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'><polyline points='244 400 100 256 244 112' style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px'/><line x1='120' y1='256' x2='412' y2='256' style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px'/></svg>
-										</a>
-									</li>
-									<li class="paginator__item paginator__item--active"><a href="#">1</a></li>
-									<li class="paginator__item"><a href="#">2</a></li>
-									<li class="paginator__item"><a href="#">3</a></li>
-									<li class="paginator__item paginator__item--next">
-										<a href="#">
-											<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'><polyline points='268 112 412 256 268 400' style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px'/><line x1='392' y1='256' x2='100' y2='256' style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:48px'/></svg>
-										</a>
-									</li>
-								</ul>
-							</div>
-						</div>
-						<!-- end paginator -->
+						<partial name="_CardsContainerPartial" model="Model"/>
 					</div>
 				</div>
 				<!-- end content wrap -->
@@ -229,9 +170,14 @@
 		else
 		{
 			<div class="row mt-5">
-				<div class="col-md-12 mt-5">
+				<div class="col-md-12 mt-5 d-flex justify-content-center">
 					<i class="fa fa-search not-found-icon" aria-hidden="true"></i>
-					<span class="not-found-text">Empty Catalog</span>
+					<span class="not-found-text">Empty</span>
+				</div>
+			</div>
+			<div class="row d-flex justify-content-center">
+				<div class="col-md-3">
+					<a class="sign__btn" asp-controller="Home" asp-action="New">Add New</a>
 				</div>
 			</div>
 		}

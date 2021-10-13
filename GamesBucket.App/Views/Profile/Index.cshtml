@@ -1,0 +1,205 @@
+﻿@model GamesBucket.App.Models.ProfileViewModel;
+
+@{
+    ViewData["Title"] = "Profile";
+	//var userIsAdmin = _userManager.IsInRoleAsync()
+}
+
+<section class="section section--first section--last section--head" data-bg="img/profile_bg.jpg" style="background: url(img/profile_bg.jpg) center top 80px / cover no-repeat;">
+	<div class="container">
+		<div class="row">
+			<div class="col-12">
+				<div class="section__wrap">
+					<!-- section title -->
+					<h2 class="section__title">Profile</h2>
+					<!-- end section title -->
+
+					<!-- breadcrumb -->
+					<ul class="breadcrumb">
+						<li class="breadcrumb__item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+						<li class="breadcrumb__item breadcrumb__item--active">Profile</li>
+					</ul>
+					<!-- end breadcrumb -->
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<section class="section section--last">
+	<div class="container">
+		<div class="row">
+			<div class="col-12">
+				<div class="profile">
+					<div class="profile__user">
+						<div class="profile__avatar">
+							<img src="img/user.svg" alt="">
+						</div>
+						<div class="profile__meta">
+							<h3>@Model.ProfileDetails.FirstName @Model.ProfileDetails.LastName</h3>
+							<span>@Model.ProfileDetails.Email</span>
+						</div>
+					</div>
+
+					<ul class="nav nav-tabs profile__tabs" id="profile__tabs" role="tablist">
+						<li class="nav-item">
+							<a class="nav-link active" data-toggle="tab" href="#tab-1" role="tab" aria-controls="tab-1" aria-selected="true">Favorites</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link" data-toggle="tab" href="#tab-2" role="tab" aria-controls="tab-2" aria-selected="false">Completed</a>
+						</li>
+						
+						<li class="nav-item">
+							<a class="nav-link" data-toggle="tab" href="#tab-3" role="tab" aria-controls="tab-3" aria-selected="false">Settings</a>
+						</li>
+					</ul>
+
+					<button class="account__delete btn-danger" type="button" onclick="userRemove()">
+						<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M112,112l20,320c.95,18.49,14.4,32,32,32H348c17.67,0,30.87-13.51,32-32l20-320" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></path><line x1="80" y1="112" x2="432" y2="112" style="stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px"></line><path d="M192,112V72h0a23.93,23.93,0,0,1,24-24h80a23.93,23.93,0,0,1,24,24h0v40" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></path><line x1="256" y1="176" x2="256" y2="400" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></line><line x1="184" y1="176" x2="192" y2="400" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></line><line x1="328" y1="176" x2="320" y2="400" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></line></svg>
+						<span>Delete Account</span>
+					</button>
+					
+					<button class="profile__logout" type="button" onclick="userLogout()">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M304 336v40a40 40 0 01-40 40H104a40 40 0 01-40-40V136a40 40 0 0140-40h152c22.09 0 48 17.91 48 40v40M368 336l80-80-80-80M176 256h256" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></path></svg>
+						<span>Logout</span>
+					</button>
+					
+				</div>
+			</div>
+		</div>	
+	</div>
+
+	@{
+		var favs = Model.Games.Where(g => g.Favorite).ToList();
+		var played= Model.Games.Where(g => g.Played).ToList(); 
+	}
+	<div class="container">
+		<!-- content tabs -->
+		<div class="tab-content">
+			<div class="tab-pane fade active show" id="tab-1" role="tabpanel">
+				<div class="row">
+					<div class="col-12">
+						<div class="mt-5" id="favorite-games-container">
+							<partial name="_FavsListPartial" model="favs"/>
+						</div>
+					</div>
+				</div>	
+			</div>
+
+			<div class="tab-pane fade" id="tab-2" role="tabpanel">
+				<div class="row">
+					<div class="col-12">
+						<div class="mt-5" id="played-games-container">
+							<partial name="_CompletedListPartial" model="played"/>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="tab-pane fade" id="tab-3" role="tabpanel">
+				<div class="row">
+					<!-- details form -->
+					<div class="col-12 col-lg-6">
+						<form asp-controller="Profile" asp-action="SaveDetails" class="form" id="details-form">
+							<div class="row">
+								<div class="col-12">
+									<h4 class="form__title">Profile details</h4>
+								</div>
+
+								<div class="col-12">
+									<label class="form__label" for="firstname">First Name</label>
+									<input id="firstname" required type="text" class="form__input" asp-for="ProfileDetails.FirstName">
+								</div>
+
+								<div class="col-12">
+									<label class="form__label" for="lastname">Last Name</label>
+									<input id="lastname" required type="text" class="form__input" asp-for="ProfileDetails.LastName">
+								</div>
+								
+								<div class="col-12">
+									<label class="form__label" for="email">Email</label>
+									<input id="email" type="email" required class="form__input" asp-for="ProfileDetails.Email">
+								</div>
+
+								<div class="col-12 mt-3">
+									<button class="form__btn">Save</button>
+								</div>
+							</div>
+						</form>
+					</div>
+					<!-- end details form -->
+
+					<!-- password form -->
+					<div class="col-12 col-lg-6">
+						<form asp-controller="Profile" asp-action="SaveSecurity" class="form" id="security-form">
+							<div class="row">
+								<div class="col-12">
+									<h4 class="form__title">Change password</h4>
+								</div>
+
+								<div class="col-12">
+									<label class="form__label" for="oldpass">Old Password</label>
+									<input id="oldpass" required type="password" class="form__input" asp-for="ProfileSecurity.OldPassword">
+								</div>
+
+								<div class="col-12">
+									<label class="form__label" for="newpass">New Password</label>
+									<input id="newpass" required type="password" class="form__input" asp-for="ProfileSecurity.NewPassword">
+								</div>
+
+								<div class="col-12">
+									<label class="form__label" for="confirmpass">Confirm New Password</label>
+									<input id="confirmpass" required type="password" class="form__input" asp-for="ProfileSecurity.ConfirmPassword">
+								</div>
+								
+								<div class="col-12 mt-3">
+									<button class="form__btn">Change</button>
+								</div>
+							</div>
+						</form>
+					</div>
+					<!-- end password form -->
+				</div>
+			</div>
+		</div>
+		<!-- end content tabs -->
+	</div>
+</section>
+
+@section Scripts
+{
+	<script >
+ 		$().ready(function () {
+ 			$('form#details-form').validate();
+ 			$('form#security-form').validate();
+			 
+			let detailsForm = document.querySelector('form#details-form');
+			detailsForm.addEventListener('submit', saveProfileDetails);
+			
+			let securityForm = document.querySelector('form#security-form');
+			securityForm.addEventListener('submit', saveProfileSecurity);
+ 			
+
+			$('#favorite-games-table').dataTable({
+				"order": [], // disable init ordering
+				"responsive": true,
+				"columnDefs": [
+					{ responsivePriority: 1, targets: 0 },
+					{ responsivePriority: 2, targets: 4 }
+				]
+			});
+			
+			$('#completed-games-table').dataTable({
+				"order": [], // disable init ordering
+				"responsive": true,
+				"columnDefs": [
+					{ responsivePriority: 1, targets: 0 },
+					{ responsivePriority: 2, targets: 4 }
+				]
+			});
+        			
+		});
+	</script>
+}
+

@@ -1,0 +1,41 @@
+﻿@using GamesBucket.App.Models
+@model GamesBucket.App.Models.MessageViewModel
+
+@{
+    ViewData["Title"] = "Message";
+    Layout = "_EmptyLayout";
+}
+
+<div class="sign section--full-bg" style="background: black">
+	<div class="container">
+		<div class="row">
+			<div class="col-12">
+				<div class="sign__content">
+					<form class="sign__form" action="#">
+						<img src="img/logo.svg" alt="">
+						@{
+							switch (Model.Result)
+							{
+								case MessageViewModel.ResultType.Error:
+									<i class="fa fa-5x fa-exclamation-circle mb-3" style="color: #a90b0b" aria-hidden="true"></i>
+								break;
+									
+								case MessageViewModel.ResultType.Info:
+									<i class="fa fa-5x fa-info-circle mb-3" style="color: #5074e1" aria-hidden="true"></i>
+								break;
+									
+								case MessageViewModel.ResultType.Success:
+									<i class="fa fa-5x fa-check-circle-o mb-3" style="color: #29b474" aria-hidden="true"></i>
+								break;
+							}
+						}
+						<span class="section__title mt-2">@Model.Title</span>
+                        <div class="mb-4 mt-5 lead sign__text" style="font-size: 16px;">@Html.Raw(@Model.Content)</div>
+                        <a class="sign__btn" asp-controller="Account" asp-action="Login">Back to Login</a>
+                    </form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+

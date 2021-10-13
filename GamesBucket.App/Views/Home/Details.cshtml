@@ -14,14 +14,22 @@
 					<div class="details__head">
 						<div class="details__cover">
 							@{
-								if (string.IsNullOrEmpty(Model.BoxImage))
+								if (!string.IsNullOrEmpty(Model.BoxImage))
+								{
+									<img class="details-cover-box" src="@Model.BoxImage" alt="">
+								}
+								else if (!string.IsNullOrEmpty(Model.BoxImageHLTB))
+								{
+									<img class="details-cover-box" src="@Model.BoxImageHLTB" alt="">
+								}
+								else if (!string.IsNullOrEmpty(Model.HeaderImage))
 								{
 									<img class="details-top-cover" src="@Model.HeaderImage" alt="">
 									<img class="details-cover-bg" src="@Model.HeaderImage" alt="">
 								}
 								else
 								{
-									<img class="details-cover-box" src="@Model.BoxImage" alt="">
+									<img class="details-cover-box" src="/img/cover-placeholder.png" alt="">
 								}
 							
 								var movie = Model.Movies.FirstOrDefault()?.Webm
@@ -50,6 +58,19 @@
 								var website = Model.Website ?? "#";
 							}
 							<a href="@movie" class="details__trailer"><svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'><path d='M112,111V401c0,17.44,17,28.52,31,20.16l247.9-148.37c12.12-7.25,12.12-26.33,0-33.58L143,90.84C129,82.48,112,93.56,112,111Z' style='fill:none;stroke-miterlimit:10;stroke-width:32px'/></svg> <span>Watch trailer</span></a>
+							<div class="cover-pills">
+								@{
+									if (Model.Favorite)
+									{
+										<span class="card__preorder fav">FAV</span>
+									}
+									
+									if (Model.Played)
+									{
+										<span class="played">PLAYED</span>
+									}
+								}
+							</div>
 						</div>
 
 						<div class="details__wrap">
@@ -145,22 +166,27 @@
                         		</div>
                             </div>
 							<div class="details__actions">
-							@{ var displayType = string.Empty; }	
+							@{ 
+								var displayType = string.Empty;
+								var favStatus = Model.Favorite ? "pressed" : string.Empty;
+								var completedStatus = Model.Played ? "pressed" : string.Empty;
+							}
 							@if (!Model.InCatalog)
 							{
 								displayType = "none";
-								<button class="details__buy" type="button" id="btn-catalog-action" data-steamid="@Model.SteamAppId" data-action="save" onclick="editCatalog(this, this.dataset.action, this.dataset.steamid)">Add to Catalog</button>
+								<button class="details__buy" type="button" id="btn-catalog-action" data-steamid="@Model.SteamAppId" data-action="save" onclick="editCatalog(this)">Add</button>
 							}
 							else
 							{
 								displayType = "block";
-								<button class="btn-delete-static-wide btn-delete" type="button" data-steamid="@Model.SteamAppId" data-action="remove" onclick="editCatalog(this, this.dataset.action, this.dataset.steamid)">Remove from Catalog</button>
+								<button class="btn-edit-static-wide details__favorite" type="button" data-steamid="@Model.SteamAppId" data-action="remove" onclick="editCatalog(this)"><svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M112,112l20,320c.95,18.49,14.4,32,32,32H348c17.67,0,30.87-13.51,32-32l20-320" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></path><line x1="80" y1="112" x2="432" y2="112" style="stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px"></line><path d="M192,112V72h0a23.93,23.93,0,0,1,24-24h80a23.93,23.93,0,0,1,24,24h0v40" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></path><line x1="256" y1="176" x2="256" y2="400" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></line><line x1="184" y1="176" x2="192" y2="400" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></line><line x1="328" y1="176" x2="320" y2="400" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></line></svg>Remove</button>
 								var display = Model.Favorite ? "none" : "block";
 							}
-								<button class="btn-edit-static-wide details__favorite" data-steamid="@Model.SteamAppId" data-action="edit" type="button" onclick="editCatalog(this, this.dataset.action, this.dataset.steamid)" style="display: @displayType">Edit Details</button>    
-								<button class="details__favorite" type="button" onclick="addToFavorites(this)" style="display: @displayType">
-									<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M352.92,80C288,80,256,144,256,144s-32-64-96.92-64C106.32,80,64.54,124.14,64,176.81c-1.1,109.33,86.73,187.08,183,252.42a16,16,0,0,0,18,0c96.26-65.34,184.09-143.09,183-252.42C447.46,124.14,405.68,80,352.92,80Z" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></path></svg>Add to favorites
+								<button class="btn-edit-static-wide details__favorite" data-steamid="@Model.SteamAppId" data-action="edit" type="button" onclick="editCatalog(this)" style="display: @displayType"><svg xmlns="http://www.w3.org/2000/svg" width="512.000000pt" height="512.000000pt" viewBox="0 0 512.000000 512.000000" preserveAspectRatio="xMidYMid meet"><g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"><path d="M3782 4941 c-98 -27 -153 -53 -226 -105 -33 -25 -685 -669 -1448 -1433 l-1386 -1388 -281 -851 c-155 -468 -281 -862 -281 -875 0 -58 68 -129 125 -129 10 0 404 128 875 285 l855 285 1411 1412 c1538 1539 1453 1448 1506 1618 35 114 32 274 -7 389 -46 136 -98 202 -356 456 -247 243 -292 277 -421 322 -102 36 -262 42 -366 14z m300 -271 c74 -28 129 -74 339 -287 237 -239 269 -290 270 -436 1 -133 -37 -210 -171 -342 l-80 -80 -461 460 -460 460 89 86 c49 47 111 98 138 113 99 56 230 66 336 26z m-289 -878 l457 -457 -1150 -1150 -1150 -1150 -460 460 -460 460 1147 1147 c632 632 1150 1148 1153 1148 3 0 211 -206 463 -458z m-2097 -2889 c-6 -6 -1171 -393 -1183 -393 -7 0 68 238 183 583 107 320 196 589 199 596 4 10 136 -115 405 -384 220 -220 398 -401 396 -402z"/></g></svg>Modify</button>    
+								<button class="btn-edit-static-wide details__favorite @favStatus" type="button" data-steamid="@Model.SteamAppId" onclick="addToFavorites(this)" id="btn-fav" style="display: @displayType">
+									<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M352.92,80C288,80,256,144,256,144s-32-64-96.92-64C106.32,80,64.54,124.14,64,176.81c-1.1,109.33,86.73,187.08,183,252.42a16,16,0,0,0,18,0c96.26-65.34,184.09-143.09,183-252.42C447.46,124.14,405.68,80,352.92,80Z" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></path></svg>Favorites
 								</button>							
+								<button class="btn-edit-static-wide details__favorite @completedStatus" type="button" data-steamid="@Model.SteamAppId" onclick="addToCompleted(this)" id="btn-played" style="display: @displayType"><svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><defs></defs><g transform="translate(0.000000,500) scale(0.050000,-0.050000)"><path d="M7980 7809 c-93 -13 -236 -59 -316 -104 -132 -74 57 112 -3072 -3010 l-982 -980 -683 681 c-657 656 -731 725 -844 783 -278 141 -625 129 -898 -31 -82 -48 -129 -91 -528 -488 -454 -451 -506 -510 -572 -653 -61 -132 -80 -223 -79 -387 0 -159 12 -228 64 -357 61 -151 118 -222 463 -572 1506 -1528 2418 -2447 2466 -2484 114 -89 246 -153 383 -184 53 -12 119 -16 238 -16 145 0 177 3 262 26 111 29 244 95 338 166 36 27 308 294 606 593 516 519 3181 3201 4260 4288 544 549 578 588 645 749 53 126 72 244 66 401 -4 105 -11 155 -31 225 -32 110 -82 213 -139 292 -26 35 -201 202 -428 408 -211 192 -412 377 -445 410 -110 110 -235 179 -400 220 -107 28 -268 38 -374 24z m230 -661 c19 -6 53 -23 75 -39 22 -15 205 -193 407 -396 417 -418 421 -424 421 -559 0 -141 111 -20 -1543 -1684 -817 -822 -1996 -2008 -2619 -2635 -623 -627 -1150 -1152 -1172 -1167 -104 -70 -316 -60 -420 20 -19 15 -630 630 -1358 1367 -1101 1116 -1326 1349 -1349 1395 -37 76 -41 164 -12 245 21 56 45 83 409 448 212 214 406 401 431 415 41 24 54 27 145 27 78 0 109 -4 140 -19 27 -13 330 -308 930 -907 l890 -889 2165 2165 c1537 1537 2178 2172 2212 2190 80 44 157 51 248 23z"></path></g></svg>Completed</button>
 							</div>
                         </div>
 					</div>						

@@ -1,0 +1,95 @@
+﻿@model IList<GamesBucket.DataAccess.Models.Game>
+
+@{
+	if (!Model.Any())
+	{
+		<section class="section section--last section--catalog">
+			<div class="container">
+				<div class="row mt-5">
+					<div class="col-md-12 mt-5 d-flex justify-content-center">
+						<i class="fa fa-check-square-o not-found-icon" aria-hidden="true"></i>
+						<span class="not-found-text">Empty</span>
+					</div>
+				</div>
+				<div class="row d-flex justify-content-center">
+					<div class="col-md-3">
+						<a class="sign__btn clear-btn" asp-controller="Catalog" asp-action="Index">View Catalog</a>
+					</div>
+				</div>
+			</div>
+		</section>
+		return;
+	}
+}
+
+<table class="profile__table" id="completed-games-table" style="width: 100%">
+	<thead>
+	<tr>
+		<th style="max-width: 100px; width: 100px;">Cover</th>
+		<th style="max-width: 200px; width: 200px;">Title</th>
+		<th style="max-width: 160px; width: 160px;">Platforms</th>
+		<th style="max-width: 120px; width: 120px;">Released</th>
+		<th style="max-width: 90px; width: 90px;">Play Time</th>
+		<th style="max-width: 50px; width: 50px;">Action</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	@{
+		foreach (var game in Model)
+		{
+			var gameImage = String.Empty;
+			if (!string.IsNullOrEmpty(game.BoxImage))
+			{
+				gameImage = game.BoxImage;
+			}
+			else if (!string.IsNullOrEmpty(game.BoxImageHLTB))
+			{
+				gameImage = game.BoxImageHLTB;
+			}
+			else if (!string.IsNullOrEmpty(game.HeaderImage))
+			{
+				gameImage = game.HeaderImage;
+			}
+			else
+			{
+				gameImage = "/img/cover-placeholder.png";
+			}
+			
+			var release = game.ReleaseDate != DateTime.MinValue
+				? game.ReleaseDate.ToString("MMMM dd, yyyy")
+				: "N/A";
+			
+			var gameId = game.SteamAppId == 0
+				? game.GameId.ToString()
+				: game.SteamAppId.ToString();
+			
+			var mainExtraBeat = game.GameplayMainExtra == 0 
+				? "N/A" : $"{game.GameplayMainExtra} h";
+
+			var platforms = new List<string>();
+			if (game.Windows) platforms.Add("Windows");
+			if (game.Linux) platforms.Add("Linux");
+			if (game.Mac) platforms.Add("Mac");
+			
+			<tr>
+				<td>
+					<div class="profile__img table-cover">
+						<a asp-controller="Catalog" asp-action="Details" asp-route-appId="@gameId"><img src="@gameImage" alt=""></a>
+					</div>
+				</td>
+				<td><a asp-controller="Catalog" asp-action="Details" asp-route-appId="@gameId">@game.Name</a></td>
+				<td>@string.Join(", ", platforms)</td>
+				<td>@release</td>
+				<td>@mainExtraBeat</td>
+				<td>
+					<button class="card__favorite card__favorite--delete" onclick="removeCompleted(@gameId)" type="button">
+						<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M112,112l20,320c.95,18.49,14.4,32,32,32H348c17.67,0,30.87-13.51,32-32l20-320" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></path><line x1="80" y1="112" x2="432" y2="112" style="stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px"></line><path d="M192,112V72h0a23.93,23.93,0,0,1,24-24h80a23.93,23.93,0,0,1,24,24h0v40" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></path><line x1="256" y1="176" x2="256" y2="400" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></line><line x1="184" y1="176" x2="192" y2="400" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></line><line x1="328" y1="176" x2="320" y2="400" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></line></svg>
+					</button>
+				</td>
+			</tr>
+		}
+	}
+	</tbody>
+</table>
+

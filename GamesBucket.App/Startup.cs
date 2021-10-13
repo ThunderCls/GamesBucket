@@ -1,9 +1,21 @@
+using System;
+using System.Net;
+using System.Net.Http;
+using GamesBucket.App.Services;
+using GamesBucket.App.Services.Account;
+using GamesBucket.App.Services.EmailService;
 using GamesBucket.DataAccess;
-using GamesBucket.DataAccess.Services.ApiService;
-using GamesBucket.DataAccess.Services.ApiService.Steam;
-using GamesBucket.DataAccess.Services.GameService;
+using GamesBucket.DataAccess.Models;
+using GamesBucket.DataAccess.Services.Api;
+using GamesBucket.DataAccess.Services.Api.HLTB;
+using GamesBucket.DataAccess.Services.Api.Steam;
+using GamesBucket.DataAccess.Services.Games;
+using GamesBucket.DataAccess.Services.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,15 +37,41 @@ namespace GamesBucket.App
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // NOTE: enforce lowercase routing/query strings in ASP.NET Core
+            // enforce lowercase routing/query strings in ASP.NET Core
             services.AddRouting(options =>
             {
                 options.LowercaseUrls = true;
                 //options.LowercaseQueryStrings = true; // don't use with email token verification
             }); 
             
-            services.AddControllersWithViews();
+            // global authorization settings
+            services.AddMvc(options =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+                options.Filters.Add(new AuthorizeFilter(policy));
+            });
 
+            // identity settings
+            services.AddIdentity<AppUser, IdentityRole>(options =>
+                {
+                    //options.SignIn.RequireConfirmedEmail = true;
+
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequiredLength = 6;
+                }).AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
+            
+            // tokens lifespan
+            services.Configure<DataProtectionTokenProviderOptions>(options =>
+            {
+                options.TokenLifespan = TimeSpan.FromHours(1);
+            });
+            
             var db = @$"Data Source={_environment.WebRootPath}\db\data.db";
             services.AddDbContext<AppDbContext>(options =>
             {
@@ -45,8 +83,21 @@ namespace GamesBucket.App
             });
 
             services.AddAutoMapper(typeof(Startup));
-            services.AddTransient<IGameService, GameService>();
-            services.AddTransient<IApiService, SteamService>();
+            services.AddSingleton<IEmailService, EmailService>();
+            services.AddHttpClient<IHltbService, HltbService>()
+                .ConfigurePrimaryHttpMessageHandler(_ => new HttpClientHandler
+                {
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+                });
+            services.AddHttpClient<ISteamService, SteamService>()
+                .ConfigurePrimaryHttpMessageHandler(_ => new HttpClientHandler
+                {
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+                });
+            
+            services.AddScoped<IGameService, GameService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAccountService, AccountService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,7 +117,9 @@ namespace GamesBucket.App
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
-
+            app.UseAuthentication();
+            app.UseAuthorization();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();

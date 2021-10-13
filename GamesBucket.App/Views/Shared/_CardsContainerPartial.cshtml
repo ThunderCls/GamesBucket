@@ -1,0 +1,80 @@
+﻿@using GamesBucket.App.Models
+@using GamesBucket.Shared.Helpers
+@model GamesBucket.Shared.Helpers.PagedResult<GamesBucket.DataAccess.Models.Game>
+
+@foreach (var game in Model.Results)
+{
+	var genreList = game.Genres != null
+		? string.Join(";", @game.Genres.Select(g => g.Name.ToLower()))
+		: "";
+	var releaseDate = game.ReleaseDate != DateTime.MinValue
+		? game.ReleaseDate.ToUnixTimeStamp()
+		: DateTime.MaxValue.ToUnixTimeStamp();
+	
+	string gameCardImage; 
+	if(!string.IsNullOrEmpty(game.BoxImage))
+		gameCardImage = game.BoxImage;
+	else if (!string.IsNullOrEmpty(game.BoxImageHLTB))
+		gameCardImage = game.BoxImageHLTB;
+	else if (!string.IsNullOrEmpty(game.HeaderImage))
+		gameCardImage = game.HeaderImage;
+	else
+		gameCardImage = @"/img/cover-placeholder.png";
+	
+	var gameId = game.SteamAppId == 0
+		? game.GameId.ToString()
+		: game.SteamAppId.ToString();
+
+	var favStatus = game.Favorite ? "pressed" : string.Empty;
+	var completedStatus = game.Played ? "pressed" : string.Empty;
+	
+	<!-- card -->
+	<div class="col-12 col-sm-6 col-md-4 col-xl-3 game-card"
+	     data-release-date="@releaseDate"
+	     data-genre="@genreList"
+	     data-beat-time="@game.GameplayMainExtra">
+		<div class="card card--catalog">
+			<a asp-controller="Catalog" asp-action="Details" asp-route-appId="@gameId" class="card__cover">
+				<img src="@gameCardImage" alt="">
+				<div class="cover-pills">
+					@{
+						if (game.Favorite)
+						{
+							<span class="card__preorder fav">FAV</span>
+						}
+						
+						if (game.Played)
+						{
+							<span class="played">PLAYED</span>
+						}
+					}
+				</div>
+			</a>
+
+			<div class="card__title">
+				<h3><a asp-controller="Catalog" asp-action="Details" asp-route-appId="@gameId">@game.Name</a></h3>
+			</div>
+
+			<div class="card__actions">
+				<button class="card__favorite" type="button" data-steamid="@gameId" onclick="window.location = `${location.origin}/catalog/details?appId=@gameId`"><svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"><path d="M469 5106 c-148 -55 -242 -162 -269 -305 -14 -74 -14 -4408 0 -4482 23 -124 105 -229 220 -283 l65 -31 2075 0 2075 0 65 31 c115 54 197 159 220 283 14 74 14 4408 0 4482 -23 124 -105 229 -220 283 l-65 31 -2065 2 c-1684 1 -2072 -1 -2101 -11z m4161 -2541 l0 -2265 -2070 0 -2070 0 0 2265 0 2265 2070 0 2070 0 0 -2265z"/><path d="M1180 3580 l0 -170 200 0 200 0 0 170 0 170 -200 0 -200 0 0 -170z"/><path d="M1960 3580 l0 -170 990 0 990 0 0 170 0 170 -990 0 -990 0 0 -170z"/><path d="M1180 2595 l0 -165 200 0 200 0 0 165 0 165 -200 0 -200 0 0 -165z"/><path d="M1960 2595 l0 -165 990 0 990 0 0 165 0 165 -990 0 -990 0 0 -165z"/><path d="M1180 1610 l0 -170 200 0 200 0 0 170 0 170 -200 0 -200 0 0 -170z"/><path d="M1960 1610 l0 -170 990 0 990 0 0 170 0 170 -990 0 -990 0 0 -170z"/></g></svg></button>
+				<button class="card__favorite @favStatus" type="button" id="btn-fav" data-steamid="@gameId" data-btnType="card" onclick="addToFavorites(this)"><svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'><path d='M352.92,80C288,80,256,144,256,144s-32-64-96.92-64C106.32,80,64.54,124.14,64,176.81c-1.1,109.33,86.73,187.08,183,252.42a16,16,0,0,0,18,0c96.26-65.34,184.09-143.09,183-252.42C447.46,124.14,405.68,80,352.92,80Z' style='fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px'/></svg></button>
+				<button class="card__favorite @completedStatus" type="button" id="btn-played" data-steamid="@gameId" data-btnType="card" onclick="addToCompleted(this)"><svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><defs></defs><g transform="translate(0.000000,500) scale(0.050000,-0.050000)"><path d="M7980 7809 c-93 -13 -236 -59 -316 -104 -132 -74 57 112 -3072 -3010 l-982 -980 -683 681 c-657 656 -731 725 -844 783 -278 141 -625 129 -898 -31 -82 -48 -129 -91 -528 -488 -454 -451 -506 -510 -572 -653 -61 -132 -80 -223 -79 -387 0 -159 12 -228 64 -357 61 -151 118 -222 463 -572 1506 -1528 2418 -2447 2466 -2484 114 -89 246 -153 383 -184 53 -12 119 -16 238 -16 145 0 177 3 262 26 111 29 244 95 338 166 36 27 308 294 606 593 516 519 3181 3201 4260 4288 544 549 578 588 645 749 53 126 72 244 66 401 -4 105 -11 155 -31 225 -32 110 -82 213 -139 292 -26 35 -201 202 -428 408 -211 192 -412 377 -445 410 -110 110 -235 179 -400 220 -107 28 -268 38 -374 24z m230 -661 c19 -6 53 -23 75 -39 22 -15 205 -193 407 -396 417 -418 421 -424 421 -559 0 -141 111 -20 -1543 -1684 -817 -822 -1996 -2008 -2619 -2635 -623 -627 -1150 -1152 -1172 -1167 -104 -70 -316 -60 -420 20 -19 15 -630 630 -1358 1367 -1101 1116 -1326 1349 -1349 1395 -37 76 -41 164 -12 245 21 56 45 83 409 448 212 214 406 401 431 415 41 24 54 27 145 27 78 0 109 -4 140 -19 27 -13 330 -308 930 -907 l890 -889 2165 2165 c1537 1537 2178 2172 2212 2190 80 44 157 51 248 23z"></path></g></svg></button>
+				<button class="card__favorite" type="button" data-steamid="@gameId" data-action="remove" data-btnType="card" onclick="editCatalog(this)"><svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M112,112l20,320c.95,18.49,14.4,32,32,32H348c17.67,0,30.87-13.51,32-32l20-320" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></path><line x1="80" y1="112" x2="432" y2="112" style="stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px"></line><path d="M192,112V72h0a23.93,23.93,0,0,1,24-24h80a23.93,23.93,0,0,1,24,24h0v40" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></path><line x1="256" y1="176" x2="256" y2="400" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></line><line x1="184" y1="176" x2="192" y2="400" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></line><line x1="328" y1="176" x2="320" y2="400" style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></line></svg></button>
+			</div>
+		</div>
+	</div>
+	<!-- end card -->
+}
+
+@{
+	var paginatorModel = new PaginatorViewModel
+	{
+		CurrentPage = Model.CurrentPage,
+		PageSize = Model.PageSize,
+		ResultsCount = Model.Results.Count,
+		RowCount = Model.RowCount,
+		HasNextPage = Model.HasNextPage,
+		HasPreviousPage = Model.HasPreviousPage
+	};
+}
+<partial name="_PaginatorPartial" model="paginatorModel"/>

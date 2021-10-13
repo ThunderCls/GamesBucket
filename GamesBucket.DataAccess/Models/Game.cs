@@ -13,7 +13,7 @@ namespace GamesBucket.DataAccess.Models
     {
         [Key]
         public int Id { get; set; }
-        public Guid GameId { get; set; }
+        public Guid? GameId { get; set; }
         public uint SteamAppId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
@@ -46,6 +46,8 @@ namespace GamesBucket.DataAccess.Models
         public double GameplayCompletionist { get; set; }
         [DefaultValue(false)]
         public bool Played { get; set; }
+
+        public string AppUserId { get; set; }
         
         [NotMapped]
         public IFormFile CoverPhoto { get; set; }
