@@ -86,6 +86,23 @@ li.lx{
     font-family: 'Montserrat', sans-serif;
 }
 
+.notice-text {
+    flex-flow: column;
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    align-content: space-between;
+    padding: 20px;
+    color: #fff;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 110%;
+    margin-bottom: 0;
+    position: relative;
+    font-family: 'Montserrat', sans-serif;
+}
+
 @media (min-width: 375px){
     .card--catalog .card__cover {
         width: 100%;

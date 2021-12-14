@@ -39,8 +39,8 @@ namespace GamesBucket.Tests
         [Test]
         public async Task Search_Game_List_By_Title()
         {
-            var result = await _apiService.SearchGameByTitle("Portal");
-            Assert.IsNotEmpty(result);
+            var result = await _apiService.SearchGameByTitle("Portal", 1, 1);
+            Assert.IsNotEmpty(result.Results);
         }
 
         [Test]

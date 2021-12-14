@@ -7,12 +7,14 @@ using AutoMapper;
 using GamesBucket.App.Models;
 using GamesBucket.DataAccess.Models;
 using GamesBucket.DataAccess.Models.Dtos;
+using GamesBucket.DataAccess.Seed;
 using GamesBucket.DataAccess.Services.Api;
 using GamesBucket.DataAccess.Services.Api.Steam;
 using GamesBucket.DataAccess.Services.Games;
 using GamesBucket.DataAccess.Services.Users;
 using GamesBucket.Shared.Helpers;
 using GamesBucket.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -320,6 +322,7 @@ namespace GamesBucket.App.Controllers
         }
         
         [HttpGet("updatedb")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateLibrary()
         {
             try
@@ -333,7 +336,7 @@ namespace GamesBucket.App.Controllers
             }
         }
 
-        [Route("search")]
+        [HttpPost("search")]
         public async Task<IActionResult> Search(string query)
         {
             var gameResults = new PagedResult<SearchResult>(); 

@@ -1,4 +1,8 @@
+using GamesBucket.DataAccess;
+using GamesBucket.DataAccess.Seed;
+using GamesBucket.Shared.Helpers;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
@@ -15,11 +19,14 @@ namespace GamesBucket.App
                 .Enrich.FromLogContext()
                 .WriteTo.File(@"\logs\log_.txt", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
-            
-            CreateHostBuilder(args)
+
+            var host = CreateHostBuilder(args)
                 .UseSerilog()
-                .Build()
-                .Run();
+                .Build();
+
+            Seeder.SeedData(host);
+
+            host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

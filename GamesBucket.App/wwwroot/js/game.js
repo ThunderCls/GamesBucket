@@ -898,6 +898,30 @@ async function userRemove() {
     });
 }
 
+async function updateSteamDb(e) {
+    e.preventDefault();
+    await toggleLoader();
+    let url = location.origin;
+    try {
+        let result = await fetch(`${url}/catalog/updatedb`);
+        await toggleLoader();
+        
+        if (result.status === 200) {
+            showToastr("Success!", 'Steam database updated successfully', "success");
+            return;
+        } else {
+            let textResult = await result.text();
+            showToastr("Error!", textResult, "error");
+            return;
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    await toggleLoader();
+    showToastr("Warning!", "Something weird happened!", "warning");
+}
+
 async function saveProfileDetails(e) {
     e.preventDefault();
     let detailsForm = document.querySelector('form#details-form');    

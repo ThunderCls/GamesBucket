@@ -1,8 +1,13 @@
-﻿@model GamesBucket.App.Models.ProfileViewModel;
+﻿@using GamesBucket.DataAccess.Models
+@using GamesBucket.DataAccess.Seed
+@using Microsoft.AspNetCore.Identity
+@model GamesBucket.App.Models.ProfileViewModel;
+@inject SignInManager<AppUser> _signInManager;
 
 @{
     ViewData["Title"] = "Profile";
-	//var userIsAdmin = _userManager.IsInRoleAsync()
+	var signedIn = _signInManager.IsSignedIn(User);
+	var admin = User.IsInRole(Roles.Admin);
 }
 
 <section class="section section--first section--last section--head" data-bg="img/profile_bg.jpg" style="background: url(img/profile_bg.jpg) center top 80px / cover no-repeat;">
@@ -53,6 +58,13 @@
 						<li class="nav-item">
 							<a class="nav-link" data-toggle="tab" href="#tab-3" role="tab" aria-controls="tab-3" aria-selected="false">Settings</a>
 						</li>
+
+						@if (signedIn && admin)
+						{
+							<li class="nav-item">
+								<a class="nav-link" data-toggle="tab" href="#tab-4" role="tab" aria-controls="tab-4" aria-selected="false">Database</a>
+							</li>
+						}
 					</ul>
 
 					<button class="account__delete btn-danger" type="button" onclick="userRemove()">
@@ -162,6 +174,31 @@
 					<!-- end password form -->
 				</div>
 			</div>
+			
+			@if (signedIn && admin)
+			{
+				<div class="tab-pane fade" id="tab-4" role="tabpanel">
+					<div class="row">
+						<div class="col-12">
+							<div class="mt-5">
+								<form class="form" id="update-steam-db">
+									<div class="col-12">
+										<span class="notice-text "><b style="color: #a782e9;">WARNING</b>This will update the entire Steam DB with the latest data from 
+											<a href="http://store.steampowered.com/">http://store.steampowered.com/</a>
+											<br/>
+											Wait for the process to complete, don't refresh or close the page
+										</span>
+									</div>
+									<div class="col-12 mt-3">
+										<button class="form__btn">Update Database</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			}
+			
 		</div>
 		<!-- end content tabs -->
 	</div>
@@ -179,7 +216,9 @@
 			
 			let securityForm = document.querySelector('form#security-form');
 			securityForm.addEventListener('submit', saveProfileSecurity);
- 			
+			
+			let dbUpdateForm = document.querySelector('form#update-steam-db');
+			dbUpdateForm.addEventListener('submit', updateSteamDb); 			
 
 			$('#favorite-games-table').dataTable({
 				"order": [], // disable init ordering
