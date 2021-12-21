@@ -13,6 +13,7 @@ namespace GamesBucket.App.Models
         public uint SteamAppId { get; set; }
         [Required]
         public string Name { get; set; }
+        public string Genres { get; set; }
         public int? MetaCriticScore { get; set; }
         public double? SteamScore { get; set; }
         public DateTime ReleaseDate { get; set; }

@@ -48,14 +48,37 @@ namespace GamesBucket.App.Controllers
 
             var games = await _gameService
                 .GetFilteredGamesPage(loggedUser, MinPageSize, 1, null, 
-                    null, null, null, null, null);
+                    null, null, null, null, null, null, null);
             
             return View(games);
         }
 
+        [HttpGet("genres")]
+        public async Task<IActionResult> GetAllGenres([FromQuery] string term)
+        {
+            var genres = !string.IsNullOrEmpty(term)
+                ? await _gameService.GetGenres(term)
+                : await _gameService.GetGenres(string.Empty, int.MaxValue);
+            
+            return Json(new { suggestions = genres.OrderBy(g => g.Name)
+                .Select(g => g.Name) });
+        }
+        
+        [HttpGet("activegenres")]
+        public async Task<IActionResult> GetAllActiveGenres([FromQuery] string term)
+        {
+            var genres = !string.IsNullOrEmpty(term)
+                ? await _gameService.GetActiveGenres(term)
+                : await _gameService.GetActiveGenres(string.Empty, int.MaxValue);
+            
+            return Json(new { suggestions = genres.OrderBy(g => g.Name)
+                .Select(g => g.Name) });
+        }
+        
         [HttpPost("filter")]
         public async Task<IActionResult> Filter(string beatTimeInitial, string beatTimeFinal, string genres, 
-            string sortBy, string sortType, int page, int pageSize, string gameTitle)
+            string sortBy, string sortType, int page, int pageSize, string gameTitle, string completionStatus,
+            string favoriteStatus)
         {
             var loggedUser = await _userService.GetLoggedUser(User);
             if (loggedUser == null) return NotFound("User not found");
@@ -64,7 +87,7 @@ namespace GamesBucket.App.Controllers
             pageSize = pageSize > MaxPageSize ? MaxPageSize : pageSize;
             var games = await _gameService
                 .GetFilteredGamesPage(loggedUser, pageSize, page, beatTimeInitial, beatTimeFinal, 
-                    genres, sortBy, sortType, gameTitle);
+                    genres, sortBy, sortType, gameTitle, completionStatus, favoriteStatus);
 
             return PartialView("_CardsContainerPartial", games);
         }
@@ -110,7 +133,7 @@ namespace GamesBucket.App.Controllers
                 return BadRequest(message.ToString());
             }
 
-            if (newGame.CoverPhoto == null ||
+            if (newGame.CoverPhoto != null &&
                 (newGame.CoverPhoto.ContentType != "image/jpeg" &&
                  newGame.CoverPhoto.ContentType != "image/png"))
             {
@@ -121,8 +144,10 @@ namespace GamesBucket.App.Controllers
             if (loggedUser == null) return RedirectToAction("Error", "Home");
             
             var game = _mapper.Map<Game>(newGame);
+            game = await _gameService.LoadGameGenres(game);
             game.AppUserId = loggedUser.Id;
             game.InCatalog = true;
+            // todo: add try catch for possible errors when converting image and send an error description to the frontend
             await _gameService.AddCustomGame(game);
             
             return Created(String.Empty, null);
@@ -222,6 +247,7 @@ namespace GamesBucket.App.Controllers
             if(gameDetails?.GameId == null) return NotFound("Game not found");
 
             _mapper.Map(editGameView, gameDetails);
+            gameDetails = await _gameService.LoadGameGenres(gameDetails);
             await _gameService.Update(gameDetails);
 
             var appId = gameDetails.SteamAppId == 0
@@ -336,7 +362,7 @@ namespace GamesBucket.App.Controllers
             }
         }
 
-        [HttpPost("search")]
+        [HttpGet("search")]
         public async Task<IActionResult> Search(string query)
         {
             var gameResults = new PagedResult<SearchResult>(); 
@@ -347,7 +373,7 @@ namespace GamesBucket.App.Controllers
 
                 var games = await _gameService
                     .GetFilteredGamesPage(loggedUser, MinPageSize, 1, null, 
-                        null, null, null, null, query);
+                        null, null, null, null, query, null, null);
 
                 if (games.Results.Any())
                 {
@@ -375,7 +401,7 @@ namespace GamesBucket.App.Controllers
 
             var games = await _gameService
                 .GetFilteredGamesPage(loggedUser, pageSize, page, null, 
-                    null, null, sortBy, sortType, gameTitle);
+                    null, null, sortBy, sortType, gameTitle, null, null);
 
             if (games.Results.Any())
             {

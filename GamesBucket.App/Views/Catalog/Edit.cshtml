@@ -10,12 +10,19 @@
     <input type="hidden" asp-for="Id" required>
     <label for="name" class="form__label">Game Name</label>
     <input type="text" id="name" class="form__input" placeholder="Name..." asp-for="Name" required>
+    
+    <label for="genres" class="form__label">Genres</label>
+    <input type="text" id="genres" class="form__input" placeholder="Genres..." asp-for="Genres" required>
+    
     <label for="metacritic-score" class="form__label">Metacritic Score</label>
     <input type="number" id="metacritic-score" class="form__input" placeholder="Score..." asp-for="MetaCriticScore">
+    
     <label for="steam-score" class="form__label">Steam Score</label>
     <input type="number" id="steam-score" class="form__input" placeholder="Score..." asp-for="SteamScore">
+    
     <label for="release" class="form__label">Release Date</label>
     <input type="date" id="release" class="form__input" asp-for="ReleaseDate">
+    
     <div class="details-beat-time">
         <label for="gameplay-main" class="form__label">Gameplay Time</label>
         <a class="form__label" href="https://howlongtobeat.com/" target="_blank">Powered by: HowLongToBeat</a>
@@ -24,3 +31,19 @@
     <input type="number" step="0.1" id="gameplay-main-extra" class="form__input" placeholder="Main and extra..." asp-for="GameplayMainExtra">
     <input type="number" step="0.1" id="gameplay-complete" class="form__input" placeholder="Completionist..." asp-for="GameplayCompletionist">
 </form>
+
+<!-- Basic Style for Tags Input -->
+<link rel="stylesheet" type="text/css" href="/libs/jquery-amsify-suggestags/amsify.suggestags.css">
+<!-- Suggest Tags Js -->
+<script type="text/javascript" src="/libs/jquery-amsify-suggestags/jquery.amsify.suggestags.js" asp-append-version="true"></script>
+
+<script>
+    $(document).ready(function(){
+       let url = location.origin;       
+       $('input[id="genres"]').amsifySuggestags({
+            suggestionsAction: {
+                url: `${url}/catalog/genres`,                
+        },
+       });
+    });    
+</script>

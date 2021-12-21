@@ -1151,3 +1151,60 @@ label.error {
     height: auto;
     transition: stroke 0.5s;
 }
+
+/* autocomplete tag input */
+.amsify-suggestags-input-area .amsify-select-tag.col-bg {
+    background: #9064a6 !important;
+    color: white !important;
+}
+
+.amsify-suggestags-area .amsify-suggestags-input-area .amsify-suggestags-input {
+    background: #1f2534;
+    color: white !important;
+}
+
+.amsify-focus {
+    border-color: #9964a699 !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+}
+
+.amsify-suggestags-area .amsify-suggestags-list {    
+    background: #1f2534 !important;
+    border: 1px solid #9064a6 !important;
+}
+
+.amsify-suggestags-area .amsify-suggestags-list ul.amsify-list li.active {
+    background: #1b222e !important;
+}
+
+li.amsify-list-item:active {
+    background: #1b222e !important;
+    color: white !important;
+    -moz-box-shadow:    none !important;
+    -webkit-box-shadow: none !important;
+    box-shadow:         none !important;
+}
+
+.amsify-suggestags-area .amsify-suggestags-list {
+    color: white !important;
+}
+
+/* filters */
+button#filter-action {
+    color: #a782e9;
+    font-size: 13px;
+}
+
+button#filter-action:hover {
+    color: #d75252;
+}
+
+.filter-btns {
+    display: flex;
+    align-content: center;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-left: 0;
+    padding-right: 0;
+}

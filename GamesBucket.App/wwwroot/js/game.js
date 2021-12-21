@@ -35,7 +35,7 @@ async function applyCatalogFilters() {
                 return;
             }
             
-            let genres = item.dataset.genre.split(';');
+            let genres = item.dataset.genre.split(',');
             if(filterGenres.length > 0 && genres.every(g => !filterGenres.includes(g))){                    
                 item.style.display = 'none';
                 return;
@@ -68,7 +68,7 @@ async function applyFilter() {
     container.querySelectorAll('div.game-card').forEach((item) => {
         if (item != null) {
             let title = item.querySelector('div.card__title > h3 > a');
-            let genres = item.dataset.genre.split(';');
+            let genres = item.dataset.genre.split(',');
             let filterGenreText = filterGenres.querySelector(`option[value='${filterGenres.value}']`).innerText
 
             if (title.innerHTML.toLowerCase().includes(filterKeyword.toLowerCase())) {
@@ -125,6 +125,28 @@ function setContainerCards(container, sortedCards, pagination){
         container.append(card);
     });
     container.append(pagination);
+}
+ 
+function resetCatalogOrderFilters(activeFilter) {
+    let filterSelects = document.querySelectorAll('div.catalog-order-by-filters > div > div > select');
+    filterSelects.forEach(select => {
+        if (select !== null && select !== activeFilter)
+            select.value = 0;
+    });
+}
+
+function clearCatalogGenresFilters() {
+    let filterSelects = document.querySelectorAll('ul#genres-filters > li > input');
+    filterSelects.forEach(select => {
+        select.checked = false;
+    });
+}
+
+function selectAllCatalogGenresFilters() {
+    let filterSelects = document.querySelectorAll('ul#genres-filters > li > input');
+    filterSelects.forEach(select => {
+        select.checked = true;
+    });
 }
 
 async function filterGamesHomeSearch(pageNumber = 1){
@@ -266,11 +288,31 @@ async function getGamesPage(pageNumber = 1) {
     // filters
     let sortBy = '';
     let sortType = '';
+    let completionStatus = '';
+    let favStatus = '';
     let releaseTimeFilter = document.querySelector("select[name='sort-release-time']");
     let beatTimeFilter = document.querySelector("select[name='sort-beat-time']");
+    let scoreFilter = document.querySelector("select[name='sort-game-score']");
+    let completionStatusFilter = document.querySelector("select[name='completion-status']");
+    let favStatusFilter = document.querySelector("select[name='favorite-status']");
     let pageSize = document.querySelector("select[name='page-size']").value;
     let gameTitle = document.querySelector("input[name='keywords']").value;
     
+    if(completionStatusFilter.value > 0){
+        switch (completionStatusFilter.value){
+            case '1': completionStatus = 'incomplete'; break;
+            case '2': completionStatus = 'completed'; break;
+        }
+    }
+
+    if(favStatusFilter.value > 0){
+        switch (favStatusFilter.value){
+            case '1': favStatus = 'favorite'; break;
+            case '2': favStatus = 'non-favorite'; break;
+        }
+    }
+    
+    // ordering
     if(releaseTimeFilter.value > 0){
         sortBy = 'release_date';
         switch (releaseTimeFilter.value){
@@ -278,6 +320,7 @@ async function getGamesPage(pageNumber = 1) {
             case '2': sortType = 'asc'; break;
         }        
     } 
+    
     if (beatTimeFilter.value > 0){
         sortBy = 'beat_time';
         switch (beatTimeFilter.value){
@@ -285,16 +328,26 @@ async function getGamesPage(pageNumber = 1) {
             case '2': sortType = 'asc'; break;
         }
     }
-
+    
+    if(scoreFilter.value > 0){
+        sortBy = 'game_score';
+        switch (scoreFilter.value){
+            case '1': sortType = 'desc'; break;
+            case '2': sortType = 'asc'; break;
+        }
+    }
+    
     const filterData = {
         beatTimeInitial: timeRange[0],
         beatTimeFinal: timeRange[1],
-        genres: filterGenres.join(';'),
+        genres: filterGenres.join(','),
         sortBy: sortBy, 
         sortType: sortType,
         page: pageNumber,
         pageSize: pageSize,
-        gameTitle: gameTitle
+        gameTitle: gameTitle,
+        completionStatus: completionStatus,
+        favoriteStatus: favStatus
     };
     
     const bodyData = toUrlEncoded(filterData);

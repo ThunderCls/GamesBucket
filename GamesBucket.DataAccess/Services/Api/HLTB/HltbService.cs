@@ -17,7 +17,7 @@ namespace GamesBucket.DataAccess.Services.Api.HLTB
         private readonly ILogger<HltbService> _logger;
         private readonly HttpClient _httpClient;
 
-        private List<string> removedStrings = new()
+        private List<string> removedStrings = new List<string>()
         {
             "Gold Edition",
             "Deluxe Edition",

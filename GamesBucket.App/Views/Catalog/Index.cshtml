@@ -54,6 +54,51 @@
 										</div>
 
 										<div class="filter__group">
+											<label for="completion-status" class="filter__label">Completion Status</label>
+                                                                                
+											<div class="filter__select-wrap">
+												<select name="completion-status" id="completion-status" class="filter__select">
+													<option value="0">All</option>
+													<option value="1">Incomplete</option>
+													<option value="2">Completed</option>
+												</select>
+											</div>
+										</div>
+										
+										<div class="filter__group">
+											<label for="favorite-status" class="filter__label">Favorite Status</label>
+
+											<div class="filter__select-wrap">
+												<select name="favorite-status" id="favorite-status" class="filter__select">
+													<option value="0">All</option>
+													<option value="1">Favorites</option>
+													<option value="2">Non-Favorites</option>
+												</select>
+											</div>
+										</div>
+
+										<div class="filter__group">
+											<label class="filter__label">Hours</label>
+                                        
+											<div class="filter__range">
+												<div id="filter__range-start"></div>
+												<div id="filter__range-end"></div>
+											</div>
+                                        
+											<div id="filter__range"></div>
+										</div>
+
+										<div class="filter__group">
+											<div class="filter-btns col-12 mb-2">
+												<label class="filter__label">Genres</label>
+												<button type="button" onclick="clearCatalogGenresFilters()" id="filter-action" class="mr-2">Clear all</button>
+												<button type="button" onclick="selectAllCatalogGenresFilters()" id="filter-action">Select all</button>
+											</div>
+											<ul class="filter__checkboxes" id="genres-filters">
+											</ul>
+										</div>
+										
+										<div class="filter__group">
 											<label for="page-size" class="filter__label">Page Size</label>
                                                                                 
 											<div class="filter__select-wrap">
@@ -66,66 +111,44 @@
 											</div>
 										</div>
 										
-										<div class="filter__group">
-											<label for="sort-release-time" class="filter__label">Release Date</label>
-
-											<div class="filter__select-wrap">
-												<select onchange="document.querySelector('#sort-beat-time').value = 0" name="sort-release-time" id="sort-release-time" class="filter__select">
-													<option value="0">None</option>
-													<option value="1">Newest</option>
-													<option value="2">Oldest</option>
-												</select>
-											</div>
-										</div>
+										<h4 class="filter__title">Order by <button type="button" onclick="resetCatalogFilters()">Clear all</button></h4>
 										
-										<div class="filter__group">
-                                        	<label for="sort-beat-time" class="filter__label">Beat Time</label>
-
-                                        	<div class="filter__select-wrap">
-                                        		<select onchange="document.querySelector('#sort-release-time').value = 0" name="sort-beat-time" id="sort-beat-time" class="filter__select">
-                                        			<option value="0">None</option>
-                                        			<option value="1">Longest</option>
-                                        			<option value="2">Shortest</option>
-                                        		</select>
-                                        	</div>
-                                        </div>
-
-										<div class="filter__group">
-											<label class="filter__label">Hours</label>
-
-											<div class="filter__range">
-												<div id="filter__range-start"></div>
-												<div id="filter__range-end"></div>
+										<div class="catalog-order-by-filters col-12 mb-5" style="padding: 0; margin: 0;">
+											<div class="filter__group">
+												<label for="sort-release-time" class="filter__label">Release Date</label>
+                                            
+												<div class="filter__select-wrap">
+													<select onchange="resetCatalogOrderFilters(this)" name="sort-release-time" id="sort-release-time" class="filter__select">
+														<option value="0">None</option>
+														<option value="1">Newest</option>
+														<option value="2">Oldest</option>
+													</select>
+												</div>
 											</div>
 
-											<div id="filter__range"></div>
-										</div>
+											<div class="filter__group">
+												<label for="sort-beat-time" class="filter__label">Beat Time</label>
+                                            
+												<div class="filter__select-wrap">
+													<select onchange="resetCatalogOrderFilters(this)" name="sort-beat-time" id="sort-beat-time" class="filter__select">
+														<option value="0">None</option>
+														<option value="1">Longest</option>
+														<option value="2">Shortest</option>
+													</select>
+												</div>
+											</div>
 
-										<div class="filter__group">
-											<label class="filter__label">Genres</label>
-											<ul class="filter__checkboxes">
-												@{
-													var genres = new HashSet<string>();
-													foreach (var genreList in Model.Results.Select(g => g?.Genres))
-													{
-														if (genreList != null)
-														{
-															var genreStrings = genreList.Select(ge => ge?.Name);
-															genres.UnionWith(genreStrings.Where(s => s != null));
-														}
-													}
-
-													var orderedGenres = genres.OrderBy(g => g).ToList();
-													for (int i = 1; i <= orderedGenres.Count; i++)
-													{
-														var typeString = $"type{i}";
-														<li>
-															<input id="@typeString" type="checkbox" name="@typeString" checked="" data-value="@orderedGenres[i - 1]">
-															<label for="@typeString">@orderedGenres[i - 1]</label>
-														</li>
-													}
-												}
-											</ul>
+											<div class="filter__group">
+												<label for="sort-game-score" class="filter__label">Game Score</label>
+                                                                                    
+												<div class="filter__select-wrap">
+													<select onchange="resetCatalogOrderFilters(this)" name="sort-game-score" id="sort-game-score" class="filter__select">
+														<option value="0">None</option>
+														<option value="1">Highest</option>
+														<option value="2">Lowest</option>
+													</select>
+												</div>
+											</div>
 										</div>
 										
 										<div class="filter__group">
@@ -184,3 +207,55 @@
 	</div>
 </section>
 <!-- end section -->
+
+<script >
+	loadGenresFilters(7);
+	
+	async function loadGenresFilters(limit) {
+		let url = location.origin;
+		try {
+			let result = await fetch(`${url}/catalog/activegenres`);
+			if (result.status !== 200) return;
+	
+			let genresList = document.querySelector('ul.filter__checkboxes');
+			genresList.innerHTML = '';
+	
+			let jsonGenres = await result.json();
+			let typeString = 0;
+			jsonGenres.suggestions.every(genre => {
+				typeString++;
+				let html = `<input id="type${typeString}" type="checkbox" name="type${typeString}" checked="" data-value="${genre}">
+							<label for="type${typeString}">${genre}</label>`
+				let item = document.createElement('li');
+				item.innerHTML = html;
+				genresList.append(item);
+				return true;
+			});
+			
+			let item = document.createElement('div');
+            item.classList.add('mt-3');
+							
+			if (limit > 0) {				
+				item.innerHTML = '<button type="button" id="filter-action" onclick="loadGenresFilters()">Show All</button>';
+				genresList.append(item);
+
+				let genresBoxes = document.querySelectorAll('ul#genres-filters > li');				
+				Array.from(genresBoxes).slice(limit).forEach(checkBox => {
+					checkBox.style.display = 'none';
+				});
+				
+			} else {
+				item.innerHTML = '<button type="button" id="filter-action" onclick="loadGenresFilters(7)">Show Less</button>';
+				genresList.append(item);
+				
+				let genresBoxes = document.querySelectorAll('ul#genres-filters > li');				
+				Array.from(genresBoxes).slice(limit).forEach(checkBox => {
+					checkBox.style.display = 'block';
+				});
+			}
+			
+		} catch (error) {
+			console.log(error)
+		}
+	}	
+</script>

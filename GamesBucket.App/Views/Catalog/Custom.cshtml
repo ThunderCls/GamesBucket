@@ -49,7 +49,7 @@ Loader
 
 									<div class="form-row split-row">
 										<div class="col-md-6">
-											<input type="text" class="form__input" placeholder="Genres" asp-for="Genres">
+											<input type="text" class="form__input" id="genres" placeholder="Genres" asp-for="Genres">
 										</div>
 										<div class="col-md-6">
 											<input type="text" class="form__input" placeholder="Languages" asp-for="SupportedLanguages">
@@ -112,7 +112,21 @@ Loader
 </section>
 <!-- end section -->
 
+<!-- Basic Style for Tags Input -->
+<link rel="stylesheet" type="text/css" href="/libs/jquery-amsify-suggestags/amsify.suggestags.css">
+<!-- Suggest Tags Js -->
+<script type="text/javascript" src="/libs/jquery-amsify-suggestags/jquery.amsify.suggestags.js" asp-append-version="true"></script>
+
 <script >
+	$(document).ready(function(){
+       let url = location.origin;       
+       $('input[id="genres"]').amsifySuggestags({
+            suggestionsAction: {
+                url: `${url}/catalog/genres`,                
+        },
+       });
+    }); 
+	   
 	function setupEventListener(){
 		let form = document.querySelector('form#new-game');
 		form.addEventListener('submit', newToCatalog);

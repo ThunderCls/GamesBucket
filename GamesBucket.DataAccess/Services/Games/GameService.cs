@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GamesBucket.DataAccess.Models;
 using GamesBucket.Shared.Helpers;
+using Humanizer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,10 +20,34 @@ namespace GamesBucket.DataAccess.Services.Games
         private readonly AppDbContext _dbContext;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
+        private string CompleteStatus => "Completed";
+        private string FavoriteStatus => "Favorite";
+
         public GameService(AppDbContext dbContext, IWebHostEnvironment webHostEnvironment)
         {
             _dbContext = dbContext;
             _webHostEnvironment = webHostEnvironment;
+        }
+
+        public async Task<List<Genres>> GetGenres(string term, int limit = 5)
+        {
+            var genres = await _dbContext.Genres.ToListAsync();
+            
+            return !string.IsNullOrEmpty(term)
+                ? genres.Where(g => 
+                    g.Name.Contains(term, StringComparison.InvariantCultureIgnoreCase)).Take(limit).ToList()
+                : genres.Take(limit).ToList();
+        }
+
+        public async Task<List<Genres>> GetActiveGenres(string term, int limit = 5)
+        {
+            var activeGenres = await _dbContext.Games.SelectMany(a => a.Genres)
+                .Distinct().ToListAsync();
+            
+            return !string.IsNullOrEmpty(term)
+                ? activeGenres.Where(g => 
+                    g.Name.Contains(term, StringComparison.InvariantCultureIgnoreCase)).Take(limit).ToList()
+                : activeGenres.Take(limit).ToList();
         }
 
         public async Task<List<Models.Game>> GetGames()
@@ -44,8 +69,9 @@ namespace GamesBucket.DataAccess.Services.Games
                 .ToListAsync();
         }
         
-        public async Task<PagedResult<Game>> GetFilteredGamesPage(AppUser user, int pageSize, int page, string beatTimeInitial,  
-            string beatTimeFinal, string genres, string sortBy, string sortType, string gameTitle)
+        public async Task<PagedResult<Game>> GetFilteredGamesPage(AppUser user, int pageSize, int page,
+            string beatTimeInitial, string beatTimeFinal, string genres, string sortBy, string sortType, 
+            string gameTitle, string completionStatus, string favStatus)
         {
             var games = _dbContext.Games
                 .Include(g => g.Genres)
@@ -76,6 +102,12 @@ namespace GamesBucket.DataAccess.Services.Games
                             ? games.OrderBy(g => g.GameplayMainExtra)
                             : games.OrderByDescending(g => g.GameplayMainExtra);
                         break;
+                    
+                    case "game_score":
+                        games = sortType.Equals("asc", StringComparison.OrdinalIgnoreCase)
+                            ? games.OrderBy(g => g.SteamScore)
+                            : games.OrderByDescending(g => g.SteamScore);
+                        break;
                 }
             }
             
@@ -87,14 +119,28 @@ namespace GamesBucket.DataAccess.Services.Games
                 games = games.Where(g => 
                     g.GameplayMainExtra >= beatTimeInitialFilter && g.GameplayMainExtra <= beatTimeFinalFilter);
             }
-            
+
+            // completion status
+            if (!string.IsNullOrEmpty(completionStatus))
+            {
+                games = games.Where(g =>
+                    g.Played == completionStatus.Equals(CompleteStatus, StringComparison.OrdinalIgnoreCase));
+            }
+
+            // fav status
+            if (!string.IsNullOrEmpty(favStatus))
+            {
+                games = games.Where(g =>
+                    g.Favorite == favStatus.Equals(FavoriteStatus, StringComparison.OrdinalIgnoreCase));
+            }
+
             // perform query on db
             var filteredGames = await games.ToListAsync();
             
             // genres filter
             if (!string.IsNullOrEmpty(genres))
             {
-                var generesList = genres.Split(";").ToList();
+                var generesList = genres.Split(",").ToList();
                 filteredGames = filteredGames.Where(g => 
                         generesList.Intersect(g.Genres.Select(x => x.Name.ToLower())).Any()).ToList();
             }
@@ -202,7 +248,7 @@ namespace GamesBucket.DataAccess.Services.Games
             newGame.BoxImage = @$"\img\covers\{uniqueFileName}";
             var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "img\\covers");
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                
+            
             using var image = Image.Load(newGame.CoverPhoto.OpenReadStream());
             // resize picture
             image.Mutate(x => x.Resize(new ResizeOptions
@@ -243,11 +289,38 @@ namespace GamesBucket.DataAccess.Services.Games
                 await _dbContext.SaveChangesAsync();
             }
         }
+
+        public async Task<Game> LoadGameGenres(Game game)
+        {
+            var allGenres = await _dbContext.Genres.ToListAsync();
+            var newGenres = game.Genres.Select(g => g.Name);
+                            
+            var existingGenres = allGenres.Where(g => 
+                    newGenres.Contains(g.Name, StringComparer.OrdinalIgnoreCase))
+                .ToList();
+                            
+            var nonExistingGenres = newGenres.Where(ng =>
+                    !allGenres.Select(dg => dg.Name).Contains(ng, StringComparer.OrdinalIgnoreCase))
+                .ToList();
+                            
+            existingGenres.AddRange(nonExistingGenres
+                .Select(neg => new Genres {Name = neg.Trim().Transform(To.TitleCase)}));
+
+            game.Genres = existingGenres;
+            return game;
+        }
+        
         
         public async Task<Game> Update(Game game)
         {
-            var gameResult = _dbContext.Games.Attach(game);
-            gameResult.State = EntityState.Modified;
+            // update genre ids if already present in the db
+            var existingGenres = await _dbContext.Genres.AsNoTracking().ToListAsync();
+            game.Genres.Where(g => g.GenreId == 0).ToList().ForEach(g =>
+            {
+                g.GenreId = existingGenres.FirstOrDefault(eg => eg.Name == g.Name)?.GenreId ?? 0;
+            });
+            
+            _dbContext.Games.Update(game);
             await _dbContext.SaveChangesAsync();
             
             return game;

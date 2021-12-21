@@ -9,9 +9,13 @@ namespace GamesBucket.DataAccess.Services.Games
 {
     public interface IGameService
     {
+        Task<List<Genres>> GetGenres(string term, int limit = 5);
+        Task<List<Genres>> GetActiveGenres(string term, int limit = 5);
+        Task<Game> LoadGameGenres(Game game);
         Task<List<Game>> GetGames(AppUser user);
         Task<PagedResult<Game>> GetFilteredGamesPage(AppUser user, int pageSize, int page, string beatTimeInitial,  
-            string beatTimeFinal, string genres, string sortBy, string sortType, string gameTitle);
+            string beatTimeFinal, string genres, string sortBy, string sortType, string gameTitle, 
+            string completionStatus, string favStatus);
         Task<Game> GetGameByName(string name);
         Task<Game> GetGameBySteamAppId(uint steamAppId, AppUser user);
         Task<Game> GetGameById(Guid gameId, AppUser user);

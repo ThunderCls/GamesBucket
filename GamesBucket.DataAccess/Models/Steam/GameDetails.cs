@@ -10,7 +10,7 @@ namespace GamesBucket.DataAccess.Models.Steam
         public bool Success { get; set; }
 
         [JsonPropertyName("data")]
-        public Data GameData { get; set; } = new ();
+        public Data GameData { get; set; } = new Data();
 
         public class Data
         {
@@ -30,7 +30,7 @@ namespace GamesBucket.DataAccess.Models.Steam
             public bool IsFree { get; set; }
 
             [JsonPropertyName("dlc")]
-            public List<int> Dlc { get; set; } = new ();
+            public List<int> Dlc { get; set; } = new List<int>();
 
             [JsonPropertyName("detailed_description")]
             public string? DetailedDescription { get; set; }
@@ -51,43 +51,43 @@ namespace GamesBucket.DataAccess.Models.Steam
             public string? Website { get; set; }
 
             [JsonPropertyName("developers")]
-            public List<string> Developers { get; set; } = new ();
+            public List<string> Developers { get; set; } = new List<string>();
 
             [JsonPropertyName("publishers")]
-            public List<string> Publishers { get; set; } = new ();
+            public List<string> Publishers { get; set; } = new List<string>();
 
             [JsonPropertyName("price_overview")]
-            public PriceOverview PriceOverview { get; set; } = new ();
+            public PriceOverview PriceOverview { get; set; } = new PriceOverview();
 
             [JsonPropertyName("packages")]
-            public List<int> Packages { get; set; } = new ();
+            public List<int> Packages { get; set; } = new List<int>();
 
             [JsonPropertyName("platforms")]
-            public Platforms Platforms { get; set; } = new ();
+            public Platforms Platforms { get; set; } = new Platforms();
 
             [JsonPropertyName("metacritic")]
-            public Metacritic Metacritic { get; set; } = new ();
+            public Metacritic Metacritic { get; set; } = new Metacritic();
 
             [JsonPropertyName("categories")]
-            public List<Category> Categories { get; set; } = new ();
+            public List<Category> Categories { get; set; } = new List<Category>();
 
             [JsonPropertyName("genres")]
-            public List<Genre> Genres { get; set; } = new ();
+            public List<Genre> Genres { get; set; } = new List<Genre>();
 
             [JsonPropertyName("screenshots")]
-            public List<Screenshot> Screenshots { get; set; } = new ();
+            public List<Screenshot> Screenshots { get; set; } = new List<Screenshot>();
 
             [JsonPropertyName("movies")]
-            public List<Movie> Movies { get; set; } = new ();
+            public List<Movie> Movies { get; set; } = new List<Movie>();
 
             [JsonPropertyName("recommendations")]
-            public Recommendations Recommendations { get; set; } = new ();
+            public Recommendations Recommendations { get; set; } = new Recommendations();
 
             [JsonPropertyName("achievements")]
-            public Achievements Achievements { get; set; } = new ();
+            public Achievements Achievements { get; set; } = new Achievements();
 
             [JsonPropertyName("release_date")]
-            public ReleaseDate ReleaseDate { get; set; } = new ();
+            public ReleaseDate ReleaseDate { get; set; } = new ReleaseDate();
 
             [JsonPropertyName("support_info")]
             public SupportInfo? SupportInfo { get; set; }
@@ -150,7 +150,7 @@ namespace GamesBucket.DataAccess.Models.Steam
             public int Total { get; set; }
 
             [JsonPropertyName("highlighted")]
-            public List<Highlighted> Highlighted { get; set; } = new ();
+            public List<Highlighted> Highlighted { get; set; } = new List<Highlighted>();
         }
         
         public class Highlighted
@@ -222,10 +222,10 @@ namespace GamesBucket.DataAccess.Models.Steam
             public string? Thumbnail { get; set; }
 
             [JsonPropertyName("webm")]
-            public Webm Webm { get; set; } = new ();
+            public Webm Webm { get; set; } = new Webm();
 
             [JsonPropertyName("mp4")]
-            public Mp4 Mp4 { get; set; } = new ();
+            public Mp4 Mp4 { get; set; } = new Mp4();
 
             [JsonPropertyName("highlight")]
             public bool Highlight { get; set; }

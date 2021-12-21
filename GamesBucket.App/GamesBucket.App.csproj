@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
         <UserSecretsId>08f36224-134f-43f0-9533-dcc39f44e107</UserSecretsId>
         <!-- allows the use of fluentemail razon templates -->
         <PreserveCompilationReferences>true</PreserveCompilationReferences>
@@ -10,6 +10,7 @@
 
     <ItemGroup>
       <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+      <PackageReference Include="Humanizer.Core" Version="2.13.14" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.9" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="5.0.9" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.9">
@@ -28,6 +29,9 @@
 
     <ItemGroup>
       <Content Remove="Views\Shared\Templates\_ConfirmationEmailTemplate.cshtml" />
+        
+        <None Include="..\GamesBucket.Db\data.db" CopyToOutputDirectory="Always" LinkBase="wwwroot\db\" />       
+      
       <EmbeddedResource Include="Views\Shared\Templates\_ConfirmationEmailTemplate.cshtml">
         <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

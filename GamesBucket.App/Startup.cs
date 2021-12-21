@@ -11,6 +11,7 @@ using GamesBucket.DataAccess.Services.Api.HLTB;
 using GamesBucket.DataAccess.Services.Api.Steam;
 using GamesBucket.DataAccess.Services.Games;
 using GamesBucket.DataAccess.Services.Users;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -56,8 +57,7 @@ namespace GamesBucket.App
             // identity settings
             services.AddIdentity<AppUser, IdentityRole>(options =>
                 {
-                    //options.SignIn.RequireConfirmedEmail = true;
-
+                    options.SignIn.RequireConfirmedEmail = true;
                     options.Password.RequireDigit = false;
                     options.Password.RequireLowercase = false;
                     options.Password.RequireNonAlphanumeric = false;
@@ -65,6 +65,17 @@ namespace GamesBucket.App
                     options.Password.RequiredLength = 6;
                 }).AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
+
+            // cookies settings
+            services.AddAuthentication(opt =>
+            {
+                opt.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            }).AddCookie(opt =>
+            {
+                opt.ExpireTimeSpan = TimeSpan.FromHours(1);
+                opt.Cookie.MaxAge = opt.ExpireTimeSpan;
+                opt.SlidingExpiration = true;
+            });
             
             // tokens lifespan
             services.Configure<DataProtectionTokenProviderOptions>(options =>
@@ -100,7 +111,6 @@ namespace GamesBucket.App
             services.AddScoped<IAccountService, AccountService>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -110,7 +120,6 @@ namespace GamesBucket.App
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 

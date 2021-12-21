@@ -5,7 +5,7 @@ namespace GamesBucket.DataAccess.Seed
 {
     public static class Users
     {
-        public static Dictionary<AppUser, (string password, string role)> SeedUsers => new()
+        public static Dictionary<AppUser, (string password, string role)> SeedUsers => new Dictionary<AppUser, (string password, string role)>()
         {
             {
                 new AppUser
@@ -15,7 +15,7 @@ namespace GamesBucket.DataAccess.Seed
                     FirstName = "Yuniet",
                     LastName = "Piloto"
                 },
-                (password: "mysamplepassword", role: Roles.Admin)
+                (password: "admin123", role: Roles.Admin)
             },
             {
                 new AppUser

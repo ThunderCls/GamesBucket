@@ -12,6 +12,7 @@ using GamesBucket.DataAccess.Services.Api.Steam;
 using GamesBucket.DataAccess.Services.Games;
 using GamesBucket.DataAccess.Services.Users;
 using GamesBucket.Shared.Helpers;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -39,6 +40,12 @@ namespace GamesBucket.App.Controllers
             _userManager = userManager;
             _userService = userService;
         }
+        
+        [HttpGet("about")]
+        public IActionResult About()
+        {
+            return View();
+        }
 
         public IActionResult New()
         {
@@ -60,6 +67,7 @@ namespace GamesBucket.App.Controllers
             {
                 TotalGames = games.Count,
                 TotalHours = Math.Ceiling(games.Sum(g => g.GameplayMainExtra)),
+                TotalGamesPlayed = games.Count(g => g.Played),
                 TotalHoursPlayed = Math.Ceiling(games
                     .Where(g => g.Played)
                     .Sum(g => g.GameplayMainExtra))
@@ -133,7 +141,17 @@ namespace GamesBucket.App.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
+            var exception = HttpContext.Features.Get<IExceptionHandlerFeature>();
+            // log errors to file
+            _logger.LogError($"Exception: {exception.Error.Message}\n{exception.Error.StackTrace}");
+            
+            var errorModel = new ErrorViewModel()
+            {
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+                ExceptionHandlerFeature = exception
+            };
+            
+            return View(errorModel);
         }
     }
 }
