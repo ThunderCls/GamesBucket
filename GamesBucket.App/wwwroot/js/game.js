@@ -953,26 +953,43 @@ async function userRemove() {
 
 async function updateSteamDb(e) {
     e.preventDefault();
-    await toggleLoader();
-    let url = location.origin;
-    try {
-        let result = await fetch(`${url}/catalog/updatedb`);
-        await toggleLoader();
-        
-        if (result.status === 200) {
-            showToastr("Success!", 'Steam database updated successfully', "success");
-            return;
-        } else {
-            let textResult = await result.text();
-            showToastr("Error!", textResult, "error");
-            return;
-        }
-    } catch (error) {
-        console.log(error);
-    }
+    $.confirm({
+        title: 'Update Steam Database',
+        content: 'Are you sure you want to proceed?. This will update the entire Steam DB with the latest data from Steam servers',
+        theme: 'dark',
+        type: 'purple',
+        closeIcon: false,
+        buttons: {
+            ok: {
+                btnClass: 'btn-dlg-confirm',
+                action: async function () {
+                    await toggleLoader();
+                    let url = location.origin;
+                    try {
+                        let result = await fetch(`${url}/catalog/updatedb`);
+                        await toggleLoader();
 
-    await toggleLoader();
-    showToastr("Warning!", "Something weird happened!", "warning");
+                        if (result.status === 200) {
+                            showToastr("Success!", 'Steam database updated successfully', "success");
+                            return;
+                        } else {
+                            let textResult = await result.text();
+                            showToastr("Error!", textResult, "error");
+                            return;
+                        }
+                    } catch (error) {
+                        console.log(error);
+                    }
+
+                    await toggleLoader();
+                    showToastr("Warning!", "Something weird happened!", "warning");
+                }
+            },
+            cancel: {
+                btnClass: 'btn-dlg-cancel'
+            }
+        }
+    });
 }
 
 async function saveProfileDetails(e) {

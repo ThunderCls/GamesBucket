@@ -305,16 +305,13 @@ namespace GamesBucket.DataAccess.Services.Api.Steam
         
         public async Task UpdateSteamLibrary()
         {
-            // clear the table before importing
-            await _dbContext.Database.ExecuteSqlRawAsync("delete from SteamLibraries");
-            
             var url = $"{GameListEndpoint}key={_steamKey}&max_results={MaxResults}";
             GameList appList = null;
             do
             {
                 var games = await _httpClient.GetStringAsync(url);
                 appList = JsonSerializer.Deserialize<GameList>(games);
-                if (appList != null && appList.ApiResponse != null)
+                if (appList?.ApiResponse?.Apps != null)
                 {
                     var gamesList = appList.ApiResponse.Apps
                         .Select(a => new SteamLibrary
@@ -324,8 +321,7 @@ namespace GamesBucket.DataAccess.Services.Api.Steam
                         });
 
                     await _dbContext.SteamLibraries.AddRangeAsync(gamesList);
-                    await _dbContext.SaveChangesAsync();
-                    
+
                     if (appList.ApiResponse.HaveMoreResults)
                     {
                         url = $"{GameListEndpoint}key={_steamKey}" +
@@ -336,6 +332,11 @@ namespace GamesBucket.DataAccess.Services.Api.Steam
                 // cooldown
                 Thread.Sleep(100);
             } while (appList?.ApiResponse != null && appList.ApiResponse.HaveMoreResults);
+            
+            // clear the table before importing
+            await _dbContext.Database.ExecuteSqlRawAsync("delete from SteamLibraries");
+            
+            await _dbContext.SaveChangesAsync();
         }
     }
 }
