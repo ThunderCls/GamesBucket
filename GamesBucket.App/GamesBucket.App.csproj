@@ -30,7 +30,7 @@
     <ItemGroup>
       <Content Remove="Views\Shared\Templates\_ConfirmationEmailTemplate.cshtml" />
         
-        <None Include="..\GamesBucket.Db\data.db" CopyToOutputDirectory="Always" LinkBase="wwwroot\db\" />       
+<!--        <None Include="..\GamesBucket.Db\data.db" CopyToOutputDirectory="Always" LinkBase="wwwroot\db\" />       -->
       
       <EmbeddedResource Include="Views\Shared\Templates\_ConfirmationEmailTemplate.cshtml">
         <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
