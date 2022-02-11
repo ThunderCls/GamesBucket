@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>net5.0</TargetFramework>
         <UserSecretsId>08f36224-134f-43f0-9533-dcc39f44e107</UserSecretsId>
         <!-- allows the use of fluentemail razon templates -->
         <PreserveCompilationReferences>true</PreserveCompilationReferences>

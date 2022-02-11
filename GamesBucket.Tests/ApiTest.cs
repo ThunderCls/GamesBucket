@@ -1,14 +1,13 @@
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using GamesBucket.DataAccess;
-using GamesBucket.DataAccess.Models;
 using GamesBucket.DataAccess.Models.Steam;
-using GamesBucket.DataAccess.Services.Api;
-using GamesBucket.DataAccess.Services.Api.HLTB;
 using GamesBucket.DataAccess.Services.Api.Steam;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
+using Serilog.Core;
 
 namespace GamesBucket.Tests
 {
@@ -16,24 +15,27 @@ namespace GamesBucket.Tests
     {
         private IConfiguration _configuration;
         private ISteamService _apiService;
+        private HttpClient _httpClient;
         
         [SetUp]
         public void Setup()
         {
             // var myConfiguration = new Dictionary<string, string>
             // {
-            //     {"SteamApi:Key", "3930336732F2DEEF008D1F18A533F944"},
+            //     {"SteamApi:Key", "3930336732F2DEEF008D1F18A533F944Z"},
             // };
             //
             // _configuration = new ConfigurationBuilder()
             //     .AddInMemoryCollection(myConfiguration)
             //     .Build();
             //
+            // _httpClient = new HttpClient();
+            //
             // var options = new DbContextOptionsBuilder<AppDbContext>()
             //     .UseInMemoryDatabase(databaseName: "LibraryInfo")
             //     .Options;
             //
-            // _apiService = new SteamService(_configuration, new AppDbContext(options));
+            // _apiService = new SteamService(_configuration, _httpClient, new AppDbContext(options));
         }
 
         [Test]

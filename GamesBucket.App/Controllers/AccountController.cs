@@ -112,7 +112,11 @@ namespace GamesBucket.App.Controllers
 
                 ModelState.AddModelError(string.Empty, "Incorrect login attempt");
             }
-
+            else
+            {
+                ModelState.AddModelError(string.Empty, $"Invalid Model. Found: {ModelState.ErrorCount} errors");
+            }
+            
             return View(userLoginViewModel);
         }
         

@@ -23,21 +23,8 @@
 
 	<!-- JS -->
 	<script src="~/js/jquery-3.5.1.min.js"></script>
-	
-    @* NOTE: Removing Hosting Ads Injection *@
-    @* https://medium.com/snips-ai/how-to-block-third-party-scripts-with-a-few-lines-of-javascript-f0b08b9c4c0 *@
-    @* https://github.com/elbywan/yett *@
-    <!-- 1) Add a blacklist -->
-    <script>
-        window.YETT_BLACKLIST = [
-            /ads.mgmt.somee/,
-        ]
-    </script>
-    <!-- 2) Include Yett -->
-    <script src="https://unpkg.com/yett"></script>
-    <!-- 3) Injected Ads are gone! -->
 
-    <!-- Favicons -->
+	<!-- Favicons -->
 	<link rel="icon" type="image/png" href="~/icon/favicon-32x32.png" sizes="32x32">
 	<link rel="apple-touch-icon" href="~/icon/favicon-32x32.png">
 
@@ -205,14 +192,5 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
 
 	@await RenderSectionAsync("Scripts", false)
-	
-    @* NOTE: Remove injected hosting footer *@
-    <script>
-        $().ready(function() {
-            if ($('center > a').attr('href') === "http://somee.com") {
-                $('center > a').parent().remove();
-            }
-        });
-    </script>
 </body>
 </html>
