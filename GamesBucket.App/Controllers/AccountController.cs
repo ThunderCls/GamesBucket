@@ -1,13 +1,17 @@
-﻿using System.Text;
+﻿using System;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using GamesBucket.App.Models;
 using GamesBucket.App.Services.Account;
+using GamesBucket.DataAccess;
 using GamesBucket.DataAccess.Models;
 using GamesBucket.DataAccess.Services.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace GamesBucket.App.Controllers
 {
@@ -87,7 +91,7 @@ namespace GamesBucket.App.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(UserLoginViewModel userLoginViewModel)
+        public async Task<IActionResult> Login(UserLoginViewModel userLoginViewModel, [FromServices] AppDbContext dbContext)
         {
             if (ModelState.IsValid)
             {
@@ -111,10 +115,6 @@ namespace GamesBucket.App.Controllers
                 }
 
                 ModelState.AddModelError(string.Empty, "Incorrect login attempt");
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, $"Invalid Model. Found: {ModelState.ErrorCount} errors");
             }
             
             return View(userLoginViewModel);
